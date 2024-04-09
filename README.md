@@ -1,7 +1,18 @@
 # PS4-Cheater
-PS4 Cheater is a .NET Framework C#-based Program used together with PS4Debug and libdebug, to allow for finding, and modifying in-game memory values. It's like the PS4 Version of Cheat Engine.
+PS4 Cheater is a C# based Cheating Program for the PS4 System. It's similar to Cheat Engine, in the sense that it is used to Create Cheats for PS4 Games.
+The PS4 Cheater uses the [libdebug](https://github.com/a0zhar/libdebug) library, and the [ps4debug](https://github.com/a0zhar/ps4debug) ps4 payload.
+<br><br>
 
 
+## What can it do?
+For in-game values such as for example: Ammo, Health, Stamina, Money, etc. it can do stuff such as: 
+- Find the Offset's of and/or Pointer's for in-game values.
+- Modify the value's for said in-game values in realtime.
+- Create cheat tables (similar to cheat engine)
+<br><br>
+
+
+## Changelog
 ### Patches made on (2024-04-05)
 - Reorganized, improvements
 - Improvements, Code cleanup/formatting
