@@ -562,15 +562,15 @@ namespace PS4_Cheater {
         }
 
         public override string ToString() {
+            // If the cheat is locked or not
+            string should_lock = Lock ? "1" : "0";
+
+            // Build new cheat list entry? 
             string save_buf = "";
-            save_buf += "simple pointer|";
-            save_buf += "pointer|";
-            save_buf += Destination.Dump(true) + "|";
-            save_buf += "data|";
-            save_buf += Source.Dump(true);
-            save_buf += (Lock ? "1" : "0") + "|";
-            save_buf += Description + "|";
-            save_buf += "\n";
+            save_buf += $"simple pointer|pointer|{Destination.Dump(true)}|data|{Source.Dump(true)}";
+            save_buf += $"{should_lock}|{Description}|\n";
+            
+            // Return the newly built cheat entry
             return save_buf;
         }
     }
