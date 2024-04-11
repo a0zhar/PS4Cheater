@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,10 +6,11 @@ using System.Windows.Forms;
 
 namespace PS4_Cheater {
 
-    public enum CheatType {
-        DATA_TYPE,
-        SIMPLE_POINTER_TYPE,
-        NONE_TYPE,
+    public enum ArithmeticType {
+        ADD_TYPE,
+        SUB_TYPE,
+        MUL_TYPE,
+        DIV_TYPE,
     }
 
     public enum CheatOperatorType {
@@ -21,205 +22,21 @@ namespace PS4_Cheater {
         ARITHMETIC_TYPE,
     }
 
+    public enum CheatType {
+        DATA_TYPE,
+        SIMPLE_POINTER_TYPE,
+        NONE_TYPE,
+    }
+
     public enum ToStringType {
         DATA_TYPE,
         ADDRESS_TYPE,
         ARITHMETIC_TYPE,
     }
 
-    public class CheatOperator {
-
-        public CheatOperator(ValueType valueType, ProcessManager processManager) {
-            ProcessManager = processManager;
-            ValueType = valueType;
-        }
-
-        private ValueType _valueType;
-
-        protected MemoryHelper MemoryHelper = new MemoryHelper(true, 0);
-
-        public ProcessManager ProcessManager { get; set; }
-
-        public ValueType ValueType {
-            get {
-                return _valueType;
-            }
-            set {
-                _valueType = value;
-                MemoryHelper.InitMemoryHandler(ValueType, CompareType.NONE, false);
-            }
-        }
-
-        public CheatOperatorType CheatOperatorType { get; set; }
-
-        public virtual byte[] Get(int idx = 0) {
-            return null;
-        }
-
-        public virtual byte[] GetRuntime() {
-            return null;
-        }
-
-        public virtual void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-        }
-
-        public virtual void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-        }
-
-        public virtual int GetSectionID() {
-            return -1;
-        }
-
-        public virtual bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            return false;
-        }
-
-        public virtual string ToString(bool simple) {
-            return null;
-        }
-
-        public virtual string Dump(bool simpleFormat) {
-            return null;
-        }
-
-        public virtual string Display() {
-            return null;
-        }
-    }
-
-    public class DataCheatOperator : CheatOperator {
-        private const int DATA_TYPE = 0;
-        private const int DATA = 1;
-
-        private byte[] data;
-
-        public DataCheatOperator(string data, ValueType valueType, ProcessManager processManager)
-            : base(valueType, processManager) {
-            this.data = MemoryHelper.StringToBytes(data);
-            CheatOperatorType = CheatOperatorType.DATA_TYPE;
-        }
-
-        public DataCheatOperator(byte[] data, ValueType valueType, ProcessManager processManager)
-            : base(valueType, processManager) {
-            this.data = data;
-            CheatOperatorType = CheatOperatorType.DATA_TYPE;
-        }
-
-        public DataCheatOperator(ProcessManager processManager)
-            : base(ValueType.NONE_TYPE, processManager) {
-            CheatOperatorType = CheatOperatorType.DATA_TYPE;
-        }
-
-        public override byte[] Get(int idx = 0) {
-            return data;
-        }
-
-        public override byte[] GetRuntime() {
-            return data;
-        }
-
-        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-            data = new byte[MemoryHelper.Length];
-            Buffer.BlockCopy(SourceCheatOperator.Get(), 0, data, 0, MemoryHelper.Length);
-        }
-
-        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-            data = new byte[MemoryHelper.Length];
-            Buffer.BlockCopy(SourceCheatOperator.GetRuntime(), 0, data, 0, MemoryHelper.Length);
-        }
-
-        public void Set(string data) {
-            this.data = MemoryHelper.StringToBytes(data);
-        }
-
-        public void Set(byte[] data) {
-            this.data = data;
-        }
-
-        public override string ToString(bool simple) {
-            return MemoryHelper.BytesToString(data);
-        }
-
-        public override string Display() {
-            return MemoryHelper.BytesToString(data);
-        }
-
-        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx + DATA_TYPE]);
-            data = MemoryHelper.StringToBytes(cheat_elements[start_idx + DATA]);
-            start_idx += 2;
-            return true;
-        }
-
-        public override string Dump(bool simpleFormat) {
-            string save_buf = "";
-            save_buf += MemoryHelper.GetStringOfValueType(ValueType) + "|";
-            save_buf += MemoryHelper.BytesToString(data) + "|";
-            return save_buf;
-        }
-    }
-
-    public class OffsetCheatOperator : CheatOperator {
-        public long Offset { get; set; }
-
-        public OffsetCheatOperator(long offset, ValueType valueType, ProcessManager processManager)
-            : base(valueType, processManager) {
-            this.Offset = offset;
-            CheatOperatorType = CheatOperatorType.OFFSET_TYPE;
-        }
-
-        public OffsetCheatOperator(ProcessManager processManager)
-            : base(ValueType.NONE_TYPE, processManager) {
-            CheatOperatorType = CheatOperatorType.OFFSET_TYPE;
-        }
-
-        public override byte[] Get(int idx = 0) {
-            return BitConverter.GetBytes(Offset);
-        }
-
-        public override byte[] GetRuntime() {
-            return BitConverter.GetBytes(Offset);
-        }
-
-        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-            Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
-        }
-
-        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-            Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
-        }
-
-        public void Set(long offset) {
-            this.Offset = offset;
-        }
-
-        public override string ToString(bool simple) {
-            return Offset.ToString("X16");
-        }
-
-        public override string Display() {
-            return Offset.ToString("X16");
-        }
-
-        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            Offset = Int64.Parse(cheat_elements[start_idx], NumberStyles.HexNumber);
-            start_idx += 1;
-            return true;
-        }
-
-        public override string Dump(bool simpleFormat) {
-            string save_buf = "";
-            save_buf += "+";
-            save_buf += Offset.ToString("X");
-            return save_buf;
-        }
-    }
-
     public class AddressCheatOperator : CheatOperator {
-        private const int SECTION_ID = 0;
         private const int ADDRESS_OFFSET = 1;
-
-        public ulong Address { get; set; }
+        private const int SECTION_ID = 0;
 
         public AddressCheatOperator(ulong Address, ProcessManager processManager)
             : base(ValueType.ULONG_TYPE, processManager) {
@@ -232,24 +49,21 @@ namespace PS4_Cheater {
             CheatOperatorType = CheatOperatorType.ADDRESS_TYPE;
         }
 
-        public override byte[] Get(int idx = 0) {
-            return BitConverter.GetBytes(Address);
+        public ulong Address { get; set; }
+
+        public override string Display() {
+            return Address.ToString("X");
         }
 
-        public override byte[] GetRuntime() {
-            return MemoryHelper.ReadMemory(Address, MemoryHelper.Length);
-        }
+        public override string Dump(bool simpleFormat) {
+            string save_buf = "";
 
-        public override int GetSectionID() {
-            return ProcessManager.MappedSectionList.GetMappedSectionID(Address);
-        }
-
-        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-            Address = BitConverter.ToUInt64(SourceCheatOperator.Get(), 0);
-        }
-
-        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-            MemoryHelper.WriteMemory(Address, SourceCheatOperator.GetRuntime());
+            int sectionID = ProcessManager.MappedSectionList.GetMappedSectionID(Address);
+            MappedSection mappedSection = ProcessManager.MappedSectionList[sectionID];
+            save_buf += String.Format("@{0:X}", Address) + "_";
+            save_buf += sectionID + "_";
+            save_buf += String.Format("{0:X}", Address - mappedSection.Start);
+            return save_buf;
         }
 
         public string DumpOldFormat() {
@@ -262,15 +76,16 @@ namespace PS4_Cheater {
             return save_buf;
         }
 
-        public override string Dump(bool simpleFormat) {
-            string save_buf = "";
+        public override byte[] Get(int idx = 0) {
+            return BitConverter.GetBytes(Address);
+        }
 
-            int sectionID = ProcessManager.MappedSectionList.GetMappedSectionID(Address);
-            MappedSection mappedSection = ProcessManager.MappedSectionList[sectionID];
-            save_buf += String.Format("@{0:X}", Address) + "_";
-            save_buf += sectionID + "_";
-            save_buf += String.Format("{0:X}", Address - mappedSection.Start);
-            return save_buf;
+        public override byte[] GetRuntime() {
+            return MemoryHelper.ReadMemory(Address, MemoryHelper.Length);
+        }
+
+        public override int GetSectionID() {
+            return ProcessManager.MappedSectionList.GetMappedSectionID(Address);
         }
 
         public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
@@ -304,8 +119,12 @@ namespace PS4_Cheater {
             return true;
         }
 
-        public override string Display() {
-            return Address.ToString("X");
+        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+            Address = BitConverter.ToUInt64(SourceCheatOperator.Get(), 0);
+        }
+
+        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+            MemoryHelper.WriteMemory(Address, SourceCheatOperator.GetRuntime());
         }
 
         public override string ToString() {
@@ -313,110 +132,7 @@ namespace PS4_Cheater {
         }
     }
 
-    public class SimplePointerCheatOperator : CheatOperator {
-        private AddressCheatOperator Address { get; set; }
-        private List<OffsetCheatOperator> Offsets { get; set; }
-
-        public SimplePointerCheatOperator(AddressCheatOperator Address, List<OffsetCheatOperator> Offsets, ValueType valueType, ProcessManager processManager)
-            : base(valueType, processManager) {
-            this.Address = Address;
-            this.Offsets = Offsets;
-            CheatOperatorType = CheatOperatorType.SIMPLE_POINTER_TYPE;
-        }
-
-        public SimplePointerCheatOperator(ProcessManager processManager)
-            : base(ValueType.NONE_TYPE, processManager) {
-            Address = new AddressCheatOperator(ProcessManager);
-            Offsets = new List<OffsetCheatOperator>();
-
-            CheatOperatorType = CheatOperatorType.SIMPLE_POINTER_TYPE;
-        }
-
-        public override byte[] Get(int idx = 0) {
-            return Address.Get();
-        }
-
-        public override byte[] GetRuntime() {
-            return MemoryHelper.ReadMemory(GetAddress(), MemoryHelper.Length);
-        }
-
-        public override int GetSectionID() {
-            return ProcessManager.MappedSectionList.GetMappedSectionID(GetAddress());
-        }
-
-        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-            throw new Exception("Pointer Set!!");
-        }
-
-        private ulong GetAddress() {
-            ulong address = BitConverter.ToUInt64(Address.GetRuntime(), 0);
-            int i = 0;
-            for (; i < Offsets.Count - 1; ++i) {
-                Byte[] new_address = MemoryHelper.ReadMemory((ulong)((long)address + Offsets[i].Offset), 8);
-                address = BitConverter.ToUInt64(new_address, 0);
-            }
-
-            if (i < Offsets.Count) {
-                address += (ulong)Offsets[i].Offset;
-            }
-
-            return address;
-        }
-
-        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-            byte[] buf = new byte[MemoryHelper.Length];
-            Buffer.BlockCopy(SourceCheatOperator.GetRuntime(), 0, buf, 0, MemoryHelper.Length);
-
-            MemoryHelper.WriteMemory(GetAddress(), buf);
-        }
-
-        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx + 0]);
-            string pointer_str = cheat_elements[start_idx + 1];
-            int pointer_idx = 0;
-            string[] pointer_list = pointer_str.Split('+');
-
-            Address.Parse(pointer_list, ref pointer_idx, simple_format);
-
-            for (int i = 1; i < pointer_list.Length; ++i) {
-                OffsetCheatOperator offset = new OffsetCheatOperator(ProcessManager);
-                offset.Parse(pointer_list, ref pointer_idx, simple_format);
-                Offsets.Add(offset);
-            }
-
-            start_idx += 2;
-
-            return true;
-        }
-
-        public override string Display() {
-            return "p->" + GetAddress().ToString("X");
-        }
-
-        public override string Dump(bool simpleFormat) {
-            string dump_buf = "";
-
-            dump_buf += MemoryHelper.GetStringOfValueType(ValueType) + "|";
-            dump_buf += Address.Dump(simpleFormat);
-            for (int i = 0; i < Offsets.Count; ++i) {
-                dump_buf += Offsets[i].Dump(simpleFormat);
-            }
-            return dump_buf;
-        }
-    }
-
-    public enum ArithmeticType {
-        ADD_TYPE,
-        SUB_TYPE,
-        MUL_TYPE,
-        DIV_TYPE,
-    }
-
     public class BinaryArithmeticCheatOperator : CheatOperator {
-        public CheatOperator Left { get; set; }
-        public CheatOperator Right { get; set; }
-
-        private ArithmeticType ArithmeticType { get; set; }
 
         public BinaryArithmeticCheatOperator(CheatOperator left, CheatOperator right, ArithmeticType ArithmeticType,
             ProcessManager processManager)
@@ -425,6 +141,19 @@ namespace PS4_Cheater {
             Right = right;
             this.ArithmeticType = ArithmeticType;
             CheatOperatorType = CheatOperatorType.ARITHMETIC_TYPE;
+        }
+
+        public CheatOperator Left { get; set; }
+        public CheatOperator Right { get; set; }
+
+        private ArithmeticType ArithmeticType { get; set; }
+
+        public override string Display() {
+            return "";
+        }
+
+        public override string Dump(bool simpleFormat) {
+            return Left.Dump(simpleFormat) + Right.Dump(simpleFormat);
         }
 
         public override byte[] Get(int idx) {
@@ -465,14 +194,6 @@ namespace PS4_Cheater {
             return MemoryHelper.StringToBytes(result.ToString());
         }
 
-        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-            throw new Exception("Set BinaryArithmeticCheatOperator");
-        }
-
-        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-            throw new Exception("SetRuntime BinaryArithmeticCheatOperator");
-        }
-
         public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
             if (Left.Parse(cheat_elements, ref start_idx, simple_format)) {
                 return false;
@@ -507,51 +228,106 @@ namespace PS4_Cheater {
             return true;
         }
 
-        public override string Display() {
-            return "";
+        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+            throw new Exception("Set BinaryArithmeticCheatOperator");
         }
 
-        public override string Dump(bool simpleFormat) {
-            return Left.Dump(simpleFormat) + Right.Dump(simpleFormat);
+        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+            throw new Exception("SetRuntime BinaryArithmeticCheatOperator");
         }
     }
 
     public class Cheat {
-        public CheatType CheatType { get; set; }
-
         protected ProcessManager ProcessManager;
-
-        public string Description { get; set; }
-
-        public bool Lock { get; set; }
-
-        public bool AllowLock { get; set; }
-
-        public virtual bool Parse(string[] cheat_elements) {
-            return false;
-        }
 
         public Cheat(ProcessManager ProcessManager) {
             this.ProcessManager = ProcessManager;
         }
 
-        protected CheatOperator Source { get; set; }
+        public bool AllowLock { get; set; }
+        public CheatType CheatType { get; set; }
+        public string Description { get; set; }
+
+        public bool Lock { get; set; }
         protected CheatOperator Destination { get; set; }
+
+        protected CheatOperator Source { get; set; }
+
+        public CheatOperator GetDestination() {
+            return Destination;
+        }
 
         public CheatOperator GetSource() {
             return Source;
         }
 
-        public CheatOperator GetDestination() {
-            return Destination;
+        public virtual bool Parse(string[] cheat_elements) {
+            return false;
+        }
+    }
+
+    public class CheatOperator {
+        protected MemoryHelper MemoryHelper = new MemoryHelper(true, 0);
+
+        private ValueType _valueType;
+
+        public CheatOperator(ValueType valueType, ProcessManager processManager) {
+            ProcessManager = processManager;
+            ValueType = valueType;
+        }
+
+        public CheatOperatorType CheatOperatorType { get; set; }
+        public ProcessManager ProcessManager { get; set; }
+
+        public ValueType ValueType {
+            get {
+                return _valueType;
+            }
+            set {
+                _valueType = value;
+                MemoryHelper.InitMemoryHandler(ValueType, CompareType.NONE, false);
+            }
+        }
+
+        public virtual string Display() {
+            return null;
+        }
+
+        public virtual string Dump(bool simpleFormat) {
+            return null;
+        }
+
+        public virtual byte[] Get(int idx = 0) {
+            return null;
+        }
+
+        public virtual byte[] GetRuntime() {
+            return null;
+        }
+
+        public virtual int GetSectionID() {
+            return -1;
+        }
+
+        public virtual bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
+            return false;
+        }
+
+        public virtual void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+        }
+
+        public virtual void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+        }
+
+        public virtual string ToString(bool simple) {
+            return null;
         }
     }
 
     public class DataCheat : Cheat {
-        private const int CHEAT_CODE_DATA_TYPE_FLAG = 5;
         private const int CHEAT_CODE_DATA_TYPE_DESCRIPTION = 6;
-
         private const int CHEAT_CODE_DATA_TYPE_ELEMENT_COUNT = CHEAT_CODE_DATA_TYPE_DESCRIPTION + 1;
+        private const int CHEAT_CODE_DATA_TYPE_FLAG = 5;
 
         public DataCheat(DataCheatOperator source, AddressCheatOperator dest, bool lock_, string description, ProcessManager processManager)
             : base(processManager) {
@@ -606,6 +382,134 @@ namespace PS4_Cheater {
             save_buf += Description + "|";
             save_buf += Destination.ToString() + "\n";
             return save_buf;
+        }
+    }
+
+    public class DataCheatOperator : CheatOperator {
+        private const int DATA = 1;
+        private const int DATA_TYPE = 0;
+        private byte[] data;
+
+        public DataCheatOperator(string data, ValueType valueType, ProcessManager processManager)
+            : base(valueType, processManager) {
+            this.data = MemoryHelper.StringToBytes(data);
+            CheatOperatorType = CheatOperatorType.DATA_TYPE;
+        }
+
+        public DataCheatOperator(byte[] data, ValueType valueType, ProcessManager processManager)
+            : base(valueType, processManager) {
+            this.data = data;
+            CheatOperatorType = CheatOperatorType.DATA_TYPE;
+        }
+
+        public DataCheatOperator(ProcessManager processManager)
+            : base(ValueType.NONE_TYPE, processManager) {
+            CheatOperatorType = CheatOperatorType.DATA_TYPE;
+        }
+
+        public override string Display() {
+            return MemoryHelper.BytesToString(data);
+        }
+
+        public override string Dump(bool simpleFormat) {
+            string save_buf = "";
+            save_buf += MemoryHelper.GetStringOfValueType(ValueType) + "|";
+            save_buf += MemoryHelper.BytesToString(data) + "|";
+            return save_buf;
+        }
+
+        public override byte[] Get(int idx = 0) {
+            return data;
+        }
+
+        public override byte[] GetRuntime() {
+            return data;
+        }
+
+        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
+            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx + DATA_TYPE]);
+            data = MemoryHelper.StringToBytes(cheat_elements[start_idx + DATA]);
+            start_idx += 2;
+            return true;
+        }
+
+        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+            data = new byte[MemoryHelper.Length];
+            Buffer.BlockCopy(SourceCheatOperator.Get(), 0, data, 0, MemoryHelper.Length);
+        }
+
+        public void Set(string data) {
+            this.data = MemoryHelper.StringToBytes(data);
+        }
+
+        public void Set(byte[] data) {
+            this.data = data;
+        }
+
+        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+            data = new byte[MemoryHelper.Length];
+            Buffer.BlockCopy(SourceCheatOperator.GetRuntime(), 0, data, 0, MemoryHelper.Length);
+        }
+
+        public override string ToString(bool simple) {
+            return MemoryHelper.BytesToString(data);
+        }
+    }
+
+    public class OffsetCheatOperator : CheatOperator {
+
+        public OffsetCheatOperator(long offset, ValueType valueType, ProcessManager processManager)
+            : base(valueType, processManager) {
+            this.Offset = offset;
+            CheatOperatorType = CheatOperatorType.OFFSET_TYPE;
+        }
+
+        public OffsetCheatOperator(ProcessManager processManager)
+            : base(ValueType.NONE_TYPE, processManager) {
+            CheatOperatorType = CheatOperatorType.OFFSET_TYPE;
+        }
+
+        public long Offset { get; set; }
+
+        public override string Display() {
+            return Offset.ToString("X16");
+        }
+
+        public override string Dump(bool simpleFormat) {
+            string save_buf = "";
+            save_buf += "+";
+            save_buf += Offset.ToString("X");
+            return save_buf;
+        }
+
+        public override byte[] Get(int idx = 0) {
+            return BitConverter.GetBytes(Offset);
+        }
+
+        public override byte[] GetRuntime() {
+            return BitConverter.GetBytes(Offset);
+        }
+
+        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
+            Offset = Int64.Parse(cheat_elements[start_idx], NumberStyles.HexNumber);
+            start_idx += 1;
+            return true;
+        }
+
+        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+            Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
+        }
+
+        public void Set(long offset) {
+            this.Offset = offset;
+        }
+
+        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+            Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
+        }
+
+        public override string ToString(bool simple) {
+            return Offset.ToString("X16");
         }
     }
 
@@ -671,28 +575,129 @@ namespace PS4_Cheater {
         }
     }
 
+    public class SimplePointerCheatOperator : CheatOperator {
+
+        public SimplePointerCheatOperator(AddressCheatOperator Address, List<OffsetCheatOperator> Offsets, ValueType valueType, ProcessManager processManager)
+            : base(valueType, processManager) {
+            this.Address = Address;
+            this.Offsets = Offsets;
+            CheatOperatorType = CheatOperatorType.SIMPLE_POINTER_TYPE;
+        }
+
+        public SimplePointerCheatOperator(ProcessManager processManager)
+            : base(ValueType.NONE_TYPE, processManager) {
+            Address = new AddressCheatOperator(ProcessManager);
+            Offsets = new List<OffsetCheatOperator>();
+
+            CheatOperatorType = CheatOperatorType.SIMPLE_POINTER_TYPE;
+        }
+
+        private AddressCheatOperator Address { get; set; }
+        private List<OffsetCheatOperator> Offsets { get; set; }
+
+        public override string Display() {
+            return "p->" + GetAddress().ToString("X");
+        }
+
+        public override string Dump(bool simpleFormat) {
+            string dump_buf = "";
+
+            dump_buf += MemoryHelper.GetStringOfValueType(ValueType) + "|";
+            dump_buf += Address.Dump(simpleFormat);
+            for (int i = 0; i < Offsets.Count; ++i) {
+                dump_buf += Offsets[i].Dump(simpleFormat);
+            }
+            return dump_buf;
+        }
+
+        public override byte[] Get(int idx = 0) {
+            return Address.Get();
+        }
+
+        public override byte[] GetRuntime() {
+            return MemoryHelper.ReadMemory(GetAddress(), MemoryHelper.Length);
+        }
+
+        public override int GetSectionID() {
+            return ProcessManager.MappedSectionList.GetMappedSectionID(GetAddress());
+        }
+
+        public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
+            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx + 0]);
+            string pointer_str = cheat_elements[start_idx + 1];
+            int pointer_idx = 0;
+            string[] pointer_list = pointer_str.Split('+');
+
+            Address.Parse(pointer_list, ref pointer_idx, simple_format);
+
+            for (int i = 1; i < pointer_list.Length; ++i) {
+                OffsetCheatOperator offset = new OffsetCheatOperator(ProcessManager);
+                offset.Parse(pointer_list, ref pointer_idx, simple_format);
+                Offsets.Add(offset);
+            }
+
+            start_idx += 2;
+
+            return true;
+        }
+
+        public override void Set(CheatOperator SourceCheatOperator, int idx = 0) {
+            throw new Exception("Pointer Set!!");
+        }
+
+        public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
+            byte[] buf = new byte[MemoryHelper.Length];
+            Buffer.BlockCopy(SourceCheatOperator.GetRuntime(), 0, buf, 0, MemoryHelper.Length);
+
+            MemoryHelper.WriteMemory(GetAddress(), buf);
+        }
+
+        private ulong GetAddress() {
+            ulong address = BitConverter.ToUInt64(Address.GetRuntime(), 0);
+            int i = 0;
+            for (; i < Offsets.Count - 1; ++i) {
+                Byte[] new_address = MemoryHelper.ReadMemory((ulong)((long)address + Offsets[i].Offset), 8);
+                address = BitConverter.ToUInt64(new_address, 0);
+            }
+
+            if (i < Offsets.Count) {
+                address += (ulong)Offsets[i].Offset;
+            }
+
+            return address;
+        }
+    }
+
     internal class CheatList {
-        private List<Cheat> cheat_list;
-
-        private const int CHEAT_CODE_HEADER_VERSION = 0;
-        private const int CHEAT_CODE_HEADER_PROCESS_NAME = 1;
-        private const int CHEAT_CODE_HEADER_PROCESS_ID = 2;
-        private const int CHEAT_CODE_HEADER_PROCESS_VER = 3;
-
         private const int CHEAT_CODE_HEADER_ELEMENT_COUNT = CHEAT_CODE_HEADER_PROCESS_NAME + 1;
-
+        private const int CHEAT_CODE_HEADER_PROCESS_ID = 2;
+        private const int CHEAT_CODE_HEADER_PROCESS_NAME = 1;
+        private const int CHEAT_CODE_HEADER_PROCESS_VER = 3;
+        private const int CHEAT_CODE_HEADER_VERSION = 0;
         private const int CHEAT_CODE_TYPE = 0;
+        private List<Cheat> cheat_list;
 
         public CheatList() {
             cheat_list = new List<Cheat>();
+        }
+
+        public int Count { get { return cheat_list.Count; } }
+
+        public Cheat this[int index] {
+            get {
+                return cheat_list[index];
+            }
+            set {
+                cheat_list[index] = value;
+            }
         }
 
         public void Add(Cheat cheat) {
             cheat_list.Add(cheat);
         }
 
-        public void RemoveAt(int idx) {
-            cheat_list.RemoveAt(idx);
+        public void Clear() {
+            cheat_list.Clear();
         }
 
         public bool Exist(Cheat cheat) {
@@ -800,6 +805,10 @@ namespace PS4_Cheater {
             return true;
         }
 
+        public void RemoveAt(int idx) {
+            cheat_list.RemoveAt(idx);
+        }
+
         public void SaveFile(string path, string prcessName, ProcessManager processManager) {
             GameInfo gameInfo = new GameInfo();
             string save_buf = CONSTANT.MAJOR_VERSION + "."
@@ -818,20 +827,5 @@ namespace PS4_Cheater {
             myStream.Write(save_buf);
             myStream.Close();
         }
-
-        public Cheat this[int index] {
-            get {
-                return cheat_list[index];
-            }
-            set {
-                cheat_list[index] = value;
-            }
-        }
-
-        public void Clear() {
-            cheat_list.Clear();
-        }
-
-        public int Count { get { return cheat_list.Count; } }
     }
 }
