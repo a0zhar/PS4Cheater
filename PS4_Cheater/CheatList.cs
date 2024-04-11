@@ -161,36 +161,36 @@ namespace PS4_Cheater {
                 return Left.Get();
             return Right.Get();
         }
-
+        
         public byte[] GetRuntime(int idx) {
-            byte[] left_buf = new byte[MemoryHelper.Length];
-            Buffer.BlockCopy(Left.Get(), 0, left_buf, 0, MemoryHelper.Length);
+            // Allocate memory for left and right buffers
+            byte[] left_buf  = new byte[MemoryHelper.Length];
             byte[] right_buf = new byte[MemoryHelper.Length];
+
+            // Copy left and right values into buffers
+            Buffer.BlockCopy(Left.Get(), 0, left_buf, 0, MemoryHelper.Length);
             Buffer.BlockCopy(Right.Get(), 0, right_buf, 0, MemoryHelper.Length);
+
+            // Convert bytes to unsigned long for arithmetic operations
             ulong left = BitConverter.ToUInt64(left_buf, 0);
             ulong right = BitConverter.ToUInt64(right_buf, 0);
             ulong result = 0;
 
+            // Handle and Perform arithmetic calculation based on the provided type
             switch (ArithmeticType) {
-                case ArithmeticType.ADD_TYPE:
-                result = left + right;
-                break;
+                case ArithmeticType.ADD_TYPE: result = left + right; break; // Handle Addition Calculation
+                case ArithmeticType.SUB_TYPE: result = left - right; break; // Handle Subtraction Calculation
+                case ArithmeticType.MUL_TYPE: result = left * right; break; // Handle Multiplication Calculation
+                case ArithmeticType.DIV_TYPE: result = left / right; break; // Handle Division Calculation
+                default: 
+                    // Handle unknown arithmetic types by throwing an exception, if none 
+                    // of the above cases are true
+                    throw new Exception("Warning! The Arithmetic type is not one of the following types:\n"+
+                                        "Addition, Subtraction, Multiplication, or Division"); 
+                    return;
+            };
 
-                case ArithmeticType.SUB_TYPE:
-                result = left - right;
-                break;
-
-                case ArithmeticType.MUL_TYPE:
-                result = left * right;
-                break;
-
-                case ArithmeticType.DIV_TYPE:
-                result = left / right;
-                break;
-
-                default:
-                throw new Exception("ArithmeticType!!!");
-            }
+            // Convert the result back to byte array and return
             return MemoryHelper.StringToBytes(result.ToString());
         }
 
