@@ -161,33 +161,31 @@ namespace PS4_Cheater {
                 return Left.Get();
             return Right.Get();
         }
-        
+
         public byte[] GetRuntime(int idx) {
             // Allocate memory for left and right buffers
-            byte[] left_buf  = new byte[MemoryHelper.Length];
+            byte[] left_buf = new byte[MemoryHelper.Length];
             byte[] right_buf = new byte[MemoryHelper.Length];
 
             // Copy left and right values into buffers
             Buffer.BlockCopy(Left.Get(), 0, left_buf, 0, MemoryHelper.Length);
             Buffer.BlockCopy(Right.Get(), 0, right_buf, 0, MemoryHelper.Length);
 
-            // Convert bytes to unsigned long for arithmetic operations
+            // Convert bytes to ulong for arithmetic operations
             ulong left = BitConverter.ToUInt64(left_buf, 0);
             ulong right = BitConverter.ToUInt64(right_buf, 0);
             ulong result = 0;
 
-            // Handle and Perform arithmetic calculation based on the provided type
+            // Perform arithmetic calculation based on the provided type
             switch (ArithmeticType) {
-                case ArithmeticType.ADD_TYPE: result = left + right; break; // Handle Addition Calculation
-                case ArithmeticType.SUB_TYPE: result = left - right; break; // Handle Subtraction Calculation
-                case ArithmeticType.MUL_TYPE: result = left * right; break; // Handle Multiplication Calculation
-                case ArithmeticType.DIV_TYPE: result = left / right; break; // Handle Division Calculation
-                default: 
-                    // Handle unknown arithmetic types by throwing an exception, if none 
-                    // of the above cases are true
-                    throw new Exception("Warning! The Arithmetic type is not one of the following types:\n"+
-                                        "Addition, Subtraction, Multiplication, or Division"); 
-                    return;
+                case ArithmeticType.ADD_TYPE: result = left + right; break;
+                case ArithmeticType.SUB_TYPE: result = left - right; break;
+                case ArithmeticType.MUL_TYPE: result = left * right; break;
+                case ArithmeticType.DIV_TYPE: result = left / right; break;
+                default:
+                    // Handle unknown arithmetic types by throwing an exception
+                    throw new Exception("Warning! The Arithmetic type is not one of the following types:\n" +
+                                        "Addition, Subtraction, Multiplication, or Division");
             };
 
             // Convert the result back to byte array and return
@@ -196,29 +194,21 @@ namespace PS4_Cheater {
 
         public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
             if (Left.Parse(cheat_elements, ref start_idx, simple_format)) {
+                Console.WriteLine("Unable to parse cheat elements! - Parse()");
                 return false;
             }
 
             switch (cheat_elements[start_idx]) {
-                case "+":
-                ArithmeticType = ArithmeticType.ADD_TYPE;
-                break;
-
-                case "-":
-                ArithmeticType = ArithmeticType.SUB_TYPE;
-                break;
-
-                case "*":
-                ArithmeticType = ArithmeticType.MUL_TYPE;
-                break;
-
-                case "/":
-                ArithmeticType = ArithmeticType.DIV_TYPE;
-                break;
+                case "+": ArithmeticType = ArithmeticType.ADD_TYPE; break;
+                case "-": ArithmeticType = ArithmeticType.SUB_TYPE; break;
+                case "*": ArithmeticType = ArithmeticType.MUL_TYPE; break;
+                case "/": ArithmeticType = ArithmeticType.DIV_TYPE; break;
 
                 default:
-                throw new Exception("ArithmeticType parse!!!");
-            }
+                    // Handle unknown arithmetic calculation types by throwing an exception
+                    throw new Exception("Warning! in Parse() function - Unknown Arithmetic Type");
+            };
+
             ++start_idx;
 
             if (Right.Parse(cheat_elements, ref start_idx, simple_format)) {
@@ -536,7 +526,8 @@ namespace PS4_Cheater {
 
             if (cheat_elements[start_idx] == "address") {
                 Destination = new AddressCheatOperator(ProcessManager);
-            } else if (cheat_elements[start_idx] == "pointer") {
+            }
+            else if (cheat_elements[start_idx] == "pointer") {
                 Destination = new SimplePointerCheatOperator(ProcessManager);
             }
 
@@ -545,7 +536,8 @@ namespace PS4_Cheater {
 
             if (cheat_elements[start_idx] == "data") {
                 Source = new DataCheatOperator(ProcessManager);
-            } else if (cheat_elements[start_idx] == "pointer") {
+            }
+            else if (cheat_elements[start_idx] == "pointer") {
                 Source = new SimplePointerCheatOperator(ProcessManager);
             }
 
@@ -565,11 +557,11 @@ namespace PS4_Cheater {
             // If the cheat is locked or not
             string should_lock = Lock ? "1" : "0";
 
-            // Build new cheat list entry? 
+            // Build new cheat list entry?
             string save_buf = "";
             save_buf += $"simple pointer|pointer|{Destination.Dump(true)}|data|{Source.Dump(true)}";
             save_buf += $"{should_lock}|{Description}|\n";
-            
+
             // Return the newly built cheat entry
             return save_buf;
         }
@@ -595,23 +587,29 @@ namespace PS4_Cheater {
         private AddressCheatOperator Address { get; set; }
         private List<OffsetCheatOperator> Offsets { get; set; }
 
-        public override string Display() {
-            return "p->" + GetAddress().ToString("X");
-        }
+        /** <summary> Returns a value in following format: "p->(hexadecimal value here)" </summary> **/
 
+        public override string Display() => $"p->{GetAddress():X}";
+
+        // TODO: Comment this function
+        public override byte[] Get(int idx = 0) => Address.Get();
+
+        // TODO: Comment this function
         public override string Dump(bool simpleFormat) {
-            string dump_buf = "";
+            string dump_buf;
 
-            dump_buf += MemoryHelper.GetStringOfValueType(ValueType) + "|";
+            // First we append the string form of the <valueType> an example of
+            // this is "8 bytes", followed by "|"
+            dump_buf = $"{MemoryHelper.GetStringOfValueType(ValueType)}|";
             dump_buf += Address.Dump(simpleFormat);
+
+            // Then we append each offset to the dump string buffer
             for (int i = 0; i < Offsets.Count; ++i) {
                 dump_buf += Offsets[i].Dump(simpleFormat);
             }
-            return dump_buf;
-        }
 
-        public override byte[] Get(int idx = 0) {
-            return Address.Get();
+            // Then we return the dump buffer
+            return dump_buf;
         }
 
         public override byte[] GetRuntime() {
@@ -623,16 +621,31 @@ namespace PS4_Cheater {
         }
 
         public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx + 0]);
-            string pointer_str = cheat_elements[start_idx + 1];
+            // Get the value's type using the <start_idx> as the array entry
+            ValueType = MemoryHelper.GetValueTypeByString(cheat_elements[start_idx]);
+
+            // Create an array of offsets, using each offset whose seperated with "+"
+            // for example: 0x32+0x21+0x11, will become:
+            // pointer_list[0] => 0x32
+            // pointer_list[1] => 0x21
+            // pointer_list[2] => 0x11
+            string[] pointer_list = cheat_elements[start_idx + 1].Split('+');
+
             int pointer_idx = 0;
-            string[] pointer_list = pointer_str.Split('+');
 
             Address.Parse(pointer_list, ref pointer_idx, simple_format);
 
             for (int i = 1; i < pointer_list.Length; ++i) {
+                // Is creating a new <OffsetCheatOperator> per offset necessary?
                 OffsetCheatOperator offset = new OffsetCheatOperator(ProcessManager);
-                offset.Parse(pointer_list, ref pointer_idx, simple_format);
+
+                // Handle the case of Parse returning false/error
+                if (!offset.Parse(pointer_list, ref pointer_idx, simple_format)) {
+                    // Print out error message
+                    Console.WriteLine($"Unable to parse Offset from pointer list index {i}!!!");
+                }
+
+                // Append the current offset to the <Offsets> list
                 Offsets.Add(offset);
             }
 
@@ -653,17 +666,26 @@ namespace PS4_Cheater {
         }
 
         private ulong GetAddress() {
+            // Get the base address?
             ulong address = BitConverter.ToUInt64(Address.GetRuntime(), 0);
-            int i = 0;
-            for (; i < Offsets.Count - 1; ++i) {
-                Byte[] new_address = MemoryHelper.ReadMemory((ulong)((long)address + Offsets[i].Offset), 8);
-                address = BitConverter.ToUInt64(new_address, 0);
+
+            // current offset index (used in for-loop)
+            int offset_idx;
+
+            // Loop through offsets and calculate the final address
+            for (offset_idx = 0; offset_idx < Offsets.Count - 1; ++offset_idx) {
+                // Read memory, then Convert the read memory byte array to Unsigned 64-bit integer
+                address = BitConverter.ToUInt64(
+                    MemoryHelper.ReadMemory((ulong)((long)address + Offsets[offset_idx].Offset), 8),
+                    0
+                );
             }
 
-            if (i < Offsets.Count) {
-                address += (ulong)Offsets[i].Offset;
-            }
+            // If the last used index value is less than the number of offsets present
+            // in the <Offsets> list, then add the offset present in current index
+            if (offset_idx < Offsets.Count) address += (ulong)Offsets[offset_idx].Offset;
 
+            // Then return the address
             return address;
         }
     }
@@ -792,12 +814,14 @@ namespace PS4_Cheater {
                     }
 
                     cheat_list.Add(cheat);
-                } else if (cheat_elements[CHEAT_CODE_TYPE] == "simple pointer") {
+                }
+                else if (cheat_elements[CHEAT_CODE_TYPE] == "simple pointer") {
                     SimplePointerCheat cheat = new SimplePointerCheat(processManager);
                     if (!cheat.Parse(cheat_elements))
                         continue;
                     cheat_list.Add(cheat);
-                } else {
+                }
+                else {
                     MessageBox.Show("Invaid cheat code:" + cheat_tuple);
                     continue;
                 }
