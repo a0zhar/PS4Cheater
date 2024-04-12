@@ -703,126 +703,221 @@ namespace PS4_Cheater {
             cheat_list = new List<Cheat>();
         }
 
-        public int Count { get { return cheat_list.Count; } }
+        /// <summary> Upon [Count] being accessed, the number of items present in [cheat_list] is returned </summary>
+        public int Count {
+            get { return cheat_list.Count; }
+        }
 
+        // TODO: Comment this part
         public Cheat this[int index] {
-            get {
-                return cheat_list[index];
-            }
-            set {
-                cheat_list[index] = value;
-            }
+            get { return cheat_list[index]; }
+            set { cheat_list[index] = value; }
         }
 
         public void Add(Cheat cheat) {
+            Console.WriteLine("Adding new cheat item to <cheat_list>!");
             cheat_list.Add(cheat);
         }
 
         public void Clear() {
+            Console.WriteLine("Clearing the <cheat_list>!");
             cheat_list.Clear();
         }
 
-        public bool Exist(Cheat cheat) {
-            return false;
-        }
+        /// <summary> What's the point of this, if it just returns false lol </summary>
+        public bool Exist(Cheat cheat) => false;
 
-        public bool Exist(ulong destAddress) {
-            return false;
-        }
+        /// <summary> And the same for this, whats the point?? </summary>
+        public bool Exist(ulong destAddress) => false;
 
+        /// <summary> Used to load/import a local cheat table file into the cheater </summary>
         public bool LoadFile(string path, ProcessManager processManager, ComboBox comboBox) {
+            // Make sure that the file specified by <path> exists, and handle if it does
+            // not exist, by printing error message and returning false
+            if (!File.Exists(path)) {
+                Console.WriteLine($"Cheat Table specified by the path {path} does not exist!");
+                return false;
+            }
+
+            // Otherwise if the file exists, then read it's content into an string array
             string[] cheats = File.ReadAllLines(path);
 
+            // If the length of the file's content is less than 2 characters? we print
+            // error message before returning false
             if (cheats.Length < 2) {
+                Console.WriteLine("The File content of the Cheat Table File with path {path} is less than 2");
                 return false;
             }
 
             string header = cheats[0];
+
+            // Create an array from all the values present in cheats first line of the
+            // cheat table file that we just read. Extracting each value seperated by
+            // the "|" character into seperate array entries
             string[] header_items = header.Split('|');
 
+            // If the newly built array contains less entries than the value specified
+            // by <CHEAT_CODE_HEADER_ELEMENT_COUNT>, we print error message before
+            // returning false
             if (header_items.Length < CHEAT_CODE_HEADER_ELEMENT_COUNT) {
+                Console.WriteLine(
+                    $"LoadFile() - Path {path} | Warning Occured!!!\n" +
+                    "The number of items in <header_items> array is less than the value specified by" +
+                    "CHEAT_CODE_HEADER_ELEMENT_COUNT"
+                );
                 return false;
             }
 
-            string[] version = (header_items[CHEAT_CODE_HEADER_VERSION]).Split('.');
+            // Removed unnecessary parenthesis
+            string[] version = header_items[CHEAT_CODE_HEADER_VERSION].Split('.');
 
-            ulong major_version = 0;
             ulong secondary_version = 0;
+            ulong major_version;
 
+            // TODO: Comment this part
             ulong.TryParse(version[0], out major_version);
             if (version.Length > 1) {
                 ulong.TryParse(version[1], out secondary_version);
             }
 
-            if (major_version > CONSTANT.MAJOR_VERSION || (major_version == CONSTANT.MAJOR_VERSION && secondary_version > CONSTANT.SECONDARY_VERSION)) {
+            // If major version is equal to constant value of Major version, and secondary version
+            // is equal to the constant value of secondary version. OR! if the major version is
+            // greater than that of the major version constant we return false
+            if (major_version == CONSTANT.MAJOR_VERSION && secondary_version > CONSTANT.SECONDARY_VERSION ||
+                major_version > CONSTANT.MAJOR_VERSION) {
                 return false;
             }
 
+            // Now we obtain the Process name, which is stored within the <header_items> array.
+            // This is the process name which the offset was found in?
             string process_name = header_items[CHEAT_CODE_HEADER_PROCESS_NAME];
-            if (process_name != (string)comboBox.SelectedItem) {
-                comboBox.SelectedItem = process_name;
-            }
 
+            // If the process name, is not equal to the selected item from the combobox
+            // then we set the selected item in the combobox to the process name
+            if (process_name != (string)comboBox.SelectedItem)
+                comboBox.SelectedItem = process_name;
+
+            // If statement again? why? I guess if the current selected item in the combobox
+            // still is not equal to the process name, show error message box and then we
+            // return false.
             if (process_name != (string)comboBox.SelectedItem) {
-                MessageBox.Show("Invalid process or refresh processes first.");
+                // Changed the message to be displayed to include the selected item name, and
+                // the current process name in question
+                MessageBox.Show(
+                    $"LoadFile() - Path {path} | An Warning Occured!!!\n" +
+                    $"Invalid process ({process_name})!\n" +
+                    $"Combobox Selected item is {(string)comboBox.SelectedItem}\n" +
+                    "Try to refresh processes first."
+                );
                 return false;
             }
 
-            string game_id = "";
-            string game_ver = "";
+            // Initialize both the Game CUSA-ID? and Game Version variables in one line
+            string game_id = "", game_ver = "";
 
+            // Then attempt to extract the Game CUSA-ID from the <header_items>
             if (header_items.Length > CHEAT_CODE_HEADER_PROCESS_ID) {
                 game_id = header_items[CHEAT_CODE_HEADER_PROCESS_ID];
                 game_id = game_id.Substring(3);
             }
 
+            // Then attempt to extract the Game Version from the <header_items>
             if (header_items.Length > CHEAT_CODE_HEADER_PROCESS_VER) {
                 game_ver = header_items[CHEAT_CODE_HEADER_PROCESS_VER];
                 game_ver = game_ver.Substring(4);
             }
 
+            // Once both the Game CUSA-ID and Version has been obtained then we check
+            // if both strings are non-empty strings
             if (game_id != "" && game_ver != "") {
                 GameInfo gameInfo = new GameInfo();
+                // Check if the newly created GameInfo() instance's <GameID> contains
+                // a different value than the one present within the imported cheat
+                // table file, and handle it in case this is true
                 if (gameInfo.GameID != game_id) {
-                    if (MessageBox.Show("Your Game ID(" + gameInfo.GameID + ") is different with cheat file(" + game_id + "), still load?",
-                        "Invalid game ID", MessageBoxButtons.YesNo) != DialogResult.Yes) {
+                    var prompt = MessageBox.Show(
+                        // Contents of the message box
+                        $"Your Game ID ({gameInfo.GameID}) is different from that "+
+                        $"specified within the cheat table file which is {game_id}\n"+
+                        "Do you still wish to load the table??",
+                        // Title of the message box
+                        "LoadFile() - Error! GameID mismatch!!!",
+                        // Add the Yes or No button to the message box
+                        MessageBoxButtons.YesNo
+                    );
+
+                    // If the user chose not to load the file, then return early false
+                    if (prompt != DialogResult.Yes)
                         return false;
-                    }
                 }
 
+                // Check if the newly created GameInfo() instance's <Version> contains
+                // a different value than the one present within the imported cheat
+                // table file, and handle it in case this is true
                 if (gameInfo.Version != game_ver) {
-                    if (MessageBox.Show("Your game version(" + gameInfo.Version + ") is different with cheat file(" + game_ver + "), still load?",
-                        "Invalid game version", MessageBoxButtons.YesNo) != DialogResult.Yes) {
+                    var prompt = MessageBox.Show(
+                        // Contents of the message box
+                        $"Your Game Version ({gameInfo.Version}) is different than the one "+
+                        $"specified in the cheat table file with path ({path}) which is: {game_ver}\n" +
+                        "Do you still wish to load the table??",
+                        // Title of the message box
+                        "LoadFile() - Error! Game Version mismatch!!!",
+                        // Add the Yes or No button to the message box
+                        MessageBoxButtons.YesNo
+                    );
+
+                    // If the user chose not to load the file, then return early false
+                    if (prompt != DialogResult.Yes)
                         return false;
-                    }
                 }
             }
 
+            // Otherwise if bot the game id and version matches that which is specified
+            // within the loaded cheat table then we begin, parsesing each cheat in the
+            // file and add it to the cheat list
             for (int i = 1; i < cheats.Length; ++i) {
                 string cheat_tuple = cheats[i];
-                string[] cheat_elements = cheat_tuple.Split(new string[] { "|" }, StringSplitOptions.None);
+                string[] cheat_elements = cheat_tuple.Split(
+                    new string[] { "|" },
+                    StringSplitOptions.None
+                );
 
                 if (cheat_elements.Length == 0) {
                     continue;
                 }
 
+                // If the Cheat code type specified in the <cheat_elements> is set to "data"
                 if (cheat_elements[CHEAT_CODE_TYPE] == "data") {
+                    // Then we attempt to create a new DataCheat instance, and then we
+                    // add the parsed contents of <cheat_elements>, and handle the case
+                    // of there occuring an error while parsing the data, by skipping to
+                    // the next cheat element
                     DataCheat cheat = new DataCheat(processManager);
                     if (!cheat.Parse(cheat_elements)) {
                         MessageBox.Show("Invaid cheat code:" + cheat_tuple);
                         continue;
                     }
-
+                    // Otherwise, we append the parsed cheat element to the <cheat_list> array
                     cheat_list.Add(cheat);
                 }
+                // If the Cheat Code Type in the <cheat_elements> array is set to "simple pointer"
                 else if (cheat_elements[CHEAT_CODE_TYPE] == "simple pointer") {
+                    // Then we attempt to create a new SimplePointerCheat instance, before we try
+                    // and parse the contents of <cheat_elements> to then be added to the newly
+                    // created SimplePointerCheat instance, and if the parsing failed, we skip to
+                    // the next cheat element
                     SimplePointerCheat cheat = new SimplePointerCheat(processManager);
                     if (!cheat.Parse(cheat_elements))
                         continue;
+
+                    // Otherwise, we append the parsed cheat element to the <cheat_list> array
                     cheat_list.Add(cheat);
                 }
+                // Otherwise if the Cheat Code type in the <cheat_element> is not set to either
+                // "data" or "simple pointer" we call a new message box, before skipping to the
+                // next cheat element
                 else {
-                    MessageBox.Show("Invaid cheat code:" + cheat_tuple);
+                    MessageBox.Show($"Invaid cheat code: {cheat_tuple} skipping to next element");
                     continue;
                 }
             }
