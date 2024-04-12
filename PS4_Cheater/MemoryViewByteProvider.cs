@@ -1,4 +1,4 @@
-﻿using Be.Windows.Forms;
+using Be.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,9 +7,15 @@ using System.Runtime.CompilerServices;
 namespace PS4_Cheater {
 
     public class MemoryViewByteProvider : IByteProvider {
-        private bool _hasChanges;
         private ByteCollection _bytes;
-        public List<int> change_list { get; set; }
+        private bool _hasChanges;
+
+        public MemoryViewByteProvider(byte[] data) : this(new ByteCollection(data))
+            => change_list = new List<int>();
+
+        public MemoryViewByteProvider(ByteCollection bytes) 
+            => this._bytes = bytes;
+        
 
         [field: CompilerGenerated, DebuggerBrowsable(0)]
         public event EventHandler Changed;
@@ -17,25 +23,34 @@ namespace PS4_Cheater {
         [field: CompilerGenerated, DebuggerBrowsable(0)]
         public event EventHandler LengthChanged;
 
-        public MemoryViewByteProvider(byte[] data) : this(new ByteCollection(data)) {
-            change_list = new List<int>();
-        }
+        public ByteCollection Bytes => this._bytes;
 
-        public MemoryViewByteProvider(ByteCollection bytes) {
-            this._bytes = bytes;
-        }
+        public List<int> change_list { get; set; }
 
-        public void ApplyChanges() {
-            this._hasChanges = false;
-        }
+        public long Length => (long)this._bytes.Count;
 
-        public void DeleteBytes(long index, long length) {
-        }
+        public long Offset => 0L;
 
-        public bool HasChanges() =>
-            this._hasChanges;
+        public void ApplyChanges() => this._hasChanges = false;
+        
+        public void DeleteBytes(long index, long length) {}
 
-        public void InsertBytes(long index, byte[] bs) {
+        public bool HasChanges() => this._hasChanges;
+
+        public void InsertBytes(long index, byte[] bs) {}
+
+        public byte ReadByte(long index) => this._bytes[(int)index];
+
+        public bool SupportsDeleteBytes() => false;
+
+        public bool SupportsInsertBytes() => false;
+
+        public bool SupportsWriteByte() => true;
+
+        public void WriteByte(long index, byte value) {
+            this._bytes[(int)index] = value;
+            this.change_list.Add((int)index);
+            this.OnChanged(EventArgs.Empty);
         }
 
         private void OnChanged(EventArgs e) {
@@ -50,32 +65,5 @@ namespace PS4_Cheater {
                 this.LengthChanged(this, e);
             }
         }
-
-        public byte ReadByte(long index) =>
-            this._bytes[(int)index];
-
-        public bool SupportsDeleteBytes() =>
-            false;
-
-        public bool SupportsInsertBytes() =>
-            false;
-
-        public bool SupportsWriteByte() =>
-            true;
-
-        public void WriteByte(long index, byte value) {
-            this._bytes[(int)index] = value;
-            this.change_list.Add((int)index);
-            this.OnChanged(EventArgs.Empty);
-        }
-
-        public ByteCollection Bytes =>
-            this._bytes;
-
-        public long Length =>
-            ((long)this._bytes.Count);
-
-        public long Offset =>
-            0L;
     }
 }
