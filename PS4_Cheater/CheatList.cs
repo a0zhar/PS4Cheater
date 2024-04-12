@@ -328,29 +328,43 @@ namespace PS4_Cheater {
             AllowLock = true;
         }
 
+        /// <summary> Function is responsible for extracting and interpreting cheat data from a string array? </summary>
         public override bool Parse(string[] cheat_elements) {
-            if (cheat_elements.Length < CHEAT_CODE_DATA_TYPE_ELEMENT_COUNT) {
+            // Check if the number of elements in <cheat_elements> array is less than the expected
+            // count specified by <CHEAT_CODE_DATA_TYPE_ELEMENT_COUNT> and if so we return early
+            // with the value of false
+            if (cheat_elements.Length < CHEAT_CODE_DATA_TYPE_ELEMENT_COUNT)
                 return false;
-            }
 
+            // Set the starting index for parsing
             int start_idx = 1;
+
+            // ParseOldFormat function parses the old format of cheat data for AddressCheatOperator
+            // and if this fails then we return early with false
             AddressCheatOperator addressCheatOperator = (AddressCheatOperator)Destination;
-            if (!(addressCheatOperator.ParseOldFormat(cheat_elements, ref start_idx))) {
+            if (!(addressCheatOperator.ParseOldFormat(cheat_elements, ref start_idx)))
                 return false;
-            }
 
-            if (!Source.Parse(cheat_elements, ref start_idx, true)) {
+            // Parse the contents of <cheat_elements> array to populate <Source> and if parsing
+            // fails then we return early with false
+            if (!Source.Parse(cheat_elements, ref start_idx, true))
                 return false;
-            }
 
+            // TODO: Comment this line
             ulong flag = ulong.Parse(cheat_elements[CHEAT_CODE_DATA_TYPE_FLAG], NumberStyles.HexNumber);
 
-            Lock = flag == 1 ? true : false;
+            // Set <Lock> based on the flag value. <Lock> indicates whether the value of the
+            // cheat item should be locked (true) or not (false)
+            Lock = flag == 1;
 
+            // Set <Description> to the value specified at the description entry within the
+            // <cheat_elements> array
             Description = cheat_elements[CHEAT_CODE_DATA_TYPE_DESCRIPTION];
 
+            // Set Destination's ValueType to match that of Source.
             Destination.ValueType = Source.ValueType;
 
+            // Return true to indicate successful parsing.
             return true;
         }
 
