@@ -34,6 +34,7 @@ namespace PS4_Cheater {
         private CheatList cheatList = new CheatList();
         private MemoryHelper memoryHelper = new MemoryHelper(true, 0);
         private ProcessManager processManager = new ProcessManager();
+
         private string[] SEARCH_BY_BYTES_FIRST = new string[]
         {
             CONSTANT.EXACT_VALUE,
@@ -58,7 +59,7 @@ namespace PS4_Cheater {
         };
 
         private string[] SEARCH_BY_FLOAT_FIRST = new string[]
-                        {
+        {
              CONSTANT.EXACT_VALUE,
              CONSTANT.FUZZY_VALUE,
              CONSTANT.BIGGER_THAN,
@@ -66,6 +67,7 @@ namespace PS4_Cheater {
              CONSTANT.BETWEEN_VALUE,
              CONSTANT.UNKNOWN_INITIAL_VALUE
         };
+
         private string[] SEARCH_BY_FLOAT_NEXT = new string[]
         {
              CONSTANT.EXACT_VALUE,
@@ -80,6 +82,7 @@ namespace PS4_Cheater {
              CONSTANT.UNCHANGED_VALUE,
              CONSTANT.BETWEEN_VALUE,
         };
+
         private string[] SEARCH_BY_HEX = new string[]
         {
             CONSTANT.EXACT_VALUE,
@@ -121,7 +124,8 @@ namespace PS4_Cheater {
 
                 add_new_row_to_cheat_list_view(simplePointerCheat);
                 cheatList.Add(simplePointerCheat);
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message, exception.Source, MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
         }
@@ -146,7 +150,8 @@ namespace PS4_Cheater {
 
             if (!newAddress.Pointer) {
                 new_data_cheat(address, value_type, value, lock_, description);
-            } else {
+            }
+            else {
                 new_pointer_cheat(address, newAddress.OffsetList, value_type, value, lock_, description);
             }
         }
@@ -213,7 +218,8 @@ namespace PS4_Cheater {
 
                 PointerFinder pointerFinder = new PointerFinder(this, address, type, processManager, cheat_list_view);
                 pointerFinder.Show();
-            } catch {
+            }
+            catch {
             }
         }
 
@@ -273,23 +279,23 @@ namespace PS4_Cheater {
 
             switch (e.ColumnIndex) {
                 case CHEAT_LIST_ENABLED:
-                cheat_list_view.EndEdit();
-                DataCheatOperator dataCheatOperator = (DataCheatOperator)cheatList[e.RowIndex].GetSource();
-                CheatOperator destOperator = cheatList[e.RowIndex].GetDestination();
-                edited_col = edited_row.Cells[CHEAT_LIST_VALUE].Value;
-                dataCheatOperator.Set((string)edited_col);
-                destOperator.SetRuntime(dataCheatOperator);
-                break;
+                    cheat_list_view.EndEdit();
+                    DataCheatOperator dataCheatOperator = (DataCheatOperator)cheatList[e.RowIndex].GetSource();
+                    CheatOperator destOperator = cheatList[e.RowIndex].GetDestination();
+                    edited_col = edited_row.Cells[CHEAT_LIST_VALUE].Value;
+                    dataCheatOperator.Set((string)edited_col);
+                    destOperator.SetRuntime(dataCheatOperator);
+                    break;
 
                 case CHEAT_LIST_DEL:
-                cheat_list_view.Rows.RemoveAt(e.RowIndex);
-                break;
+                    cheat_list_view.Rows.RemoveAt(e.RowIndex);
+                    break;
 
                 case CHEAT_LIST_LOCK:
-                cheat_list_view.EndEdit();
-                edited_col = edited_row.Cells[e.ColumnIndex].Value;
-                cheatList[e.RowIndex].Lock = (bool)edited_col;
-                break;
+                    cheat_list_view.EndEdit();
+                    edited_col = edited_row.Cells[e.ColumnIndex].Value;
+                    cheatList[e.RowIndex].Lock = (bool)edited_col;
+                    break;
             }
         }
 
@@ -299,15 +305,15 @@ namespace PS4_Cheater {
 
             switch (e.ColumnIndex) {
                 case CHEAT_LIST_VALUE:
-                DataCheatOperator dataCheatOperator = (DataCheatOperator)cheatList[e.RowIndex].GetSource();
-                CheatOperator destOperator = cheatList[e.RowIndex].GetDestination();
-                dataCheatOperator.Set((string)edited_col);
-                destOperator.SetRuntime(dataCheatOperator);
-                break;
+                    DataCheatOperator dataCheatOperator = (DataCheatOperator)cheatList[e.RowIndex].GetSource();
+                    CheatOperator destOperator = cheatList[e.RowIndex].GetDestination();
+                    dataCheatOperator.Set((string)edited_col);
+                    destOperator.SetRuntime(dataCheatOperator);
+                    break;
 
                 case CHEAT_LIST_DESC:
-                cheatList[e.RowIndex].Description = (string)edited_col;
-                break;
+                    cheatList[e.RowIndex].Description = (string)edited_col;
+                    break;
             }
         }
 
@@ -323,7 +329,8 @@ namespace PS4_Cheater {
                 value_label.Visible = true;
                 and_label.Visible = true;
                 value_box.Width = 102;
-            } else {
+            }
+            else {
                 value_1_box.Visible = false;
                 value_label.Visible = false;
                 and_label.Visible = false;
@@ -371,7 +378,8 @@ namespace PS4_Cheater {
                     this.processes_comboBox.Items.Add(process.name);
                 }
                 this.processes_comboBox.SelectedIndex = 0;
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message, exception.Source, MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
         }
@@ -384,25 +392,25 @@ namespace PS4_Cheater {
                 case ValueType.UINT_TYPE:
                 case ValueType.USHORT_TYPE:
                 case ValueType.BYTE_TYPE:
-                hex_box.Enabled = true;
-                compareTypeList.Items.AddRange(SEARCH_BY_BYTES_FIRST);
-                break;
+                    hex_box.Enabled = true;
+                    compareTypeList.Items.AddRange(SEARCH_BY_BYTES_FIRST);
+                    break;
 
                 case ValueType.DOUBLE_TYPE:
                 case ValueType.FLOAT_TYPE:
-                hex_box.Enabled = true;
-                compareTypeList.Items.AddRange(SEARCH_BY_FLOAT_FIRST);
-                break;
+                    hex_box.Enabled = true;
+                    compareTypeList.Items.AddRange(SEARCH_BY_FLOAT_FIRST);
+                    break;
 
                 case ValueType.HEX_TYPE:
                 case ValueType.STRING_TYPE:
-                hex_box.Enabled = false;
-                hex_box.Checked = false;
-                compareTypeList.Items.AddRange(SEARCH_BY_HEX);
-                break;
+                    hex_box.Enabled = false;
+                    hex_box.Checked = false;
+                    compareTypeList.Items.AddRange(SEARCH_BY_HEX);
+                    break;
 
                 default:
-                throw new Exception("GetStringOfValueType!!!");
+                    throw new Exception("GetStringOfValueType!!!");
             }
 
             int list_idx = 0;
@@ -425,21 +433,20 @@ namespace PS4_Cheater {
                 case ValueType.UINT_TYPE:
                 case ValueType.USHORT_TYPE:
                 case ValueType.BYTE_TYPE:
-                compareTypeList.Items.AddRange(SEARCH_BY_BYTES_NEXT);
-                break;
+                    compareTypeList.Items.AddRange(SEARCH_BY_BYTES_NEXT);
+                    break;
 
                 case ValueType.DOUBLE_TYPE:
                 case ValueType.FLOAT_TYPE:
-                compareTypeList.Items.AddRange(SEARCH_BY_FLOAT_NEXT);
-                break;
+                    compareTypeList.Items.AddRange(SEARCH_BY_FLOAT_NEXT);
+                    break;
 
                 case ValueType.HEX_TYPE:
                 case ValueType.STRING_TYPE:
-                compareTypeList.Items.AddRange(SEARCH_BY_HEX);
-                break;
+                    compareTypeList.Items.AddRange(SEARCH_BY_HEX);
+                    break;
 
-                default:
-                throw new Exception("GetStringOfValueType!!!");
+                default: throw new Exception("GetStringOfValueType!!!");
             }
 
             int list_idx = 0;
@@ -470,7 +477,8 @@ namespace PS4_Cheater {
                 Cheat cheat = cheatList[i];
                 if (cheat.CheatType == CheatType.DATA_TYPE) {
                     add_new_row_to_cheat_list_view((DataCheat)cheat);
-                } else if (cheat.CheatType == CheatType.SIMPLE_POINTER_TYPE) {
+                }
+                else if (cheat.CheatType == CheatType.SIMPLE_POINTER_TYPE) {
                     add_new_row_to_cheat_list_view((SimplePointerCheat)cheat);
                 }
             }
@@ -481,19 +489,19 @@ namespace PS4_Cheater {
             string version = "";
             switch (version_list.SelectedIndex) {
                 case VERSION_LIST_702:
-                version = "7.02";
-                break;
+                    version = "7.02";
+                    break;
 
                 case VERSION_LIST_672:
-                version = "6.72";
-                break;
+                    version = "6.72";
+                    break;
 
                 case VERSION_LIST_505:
-                version = "5.05";
-                break;
+                    version = "5.05";
+                    break;
 
                 default:
-                break;
+                    break;
             }
 
             if (!string.IsNullOrWhiteSpace(version)) {
@@ -521,13 +529,16 @@ namespace PS4_Cheater {
             if (version == "7.02") {
                 version_list.SelectedIndex = VERSION_LIST_702;
                 Util.Version = 702;
-            } else if (version == "6.72") {
+            }
+            else if (version == "6.72") {
                 version_list.SelectedIndex = VERSION_LIST_672;
                 Util.Version = 672;
-            } else if (version == "5.05") {
+            }
+            else if (version == "5.05") {
                 version_list.SelectedIndex = VERSION_LIST_505;
                 Util.Version = 505;
-            } else {
+            }
+            else {
                 Util.Version = 702;
                 version_list.SelectedIndex = VERSION_LIST_DEFAULT;
             }
@@ -545,6 +556,7 @@ namespace PS4_Cheater {
             this.refresh_btn.Text = CONSTANT.REFRESH;
             this.Text += " " + CONSTANT.MAJOR_VERSION + "." + CONSTANT.SECONDARY_VERSION + "." + CONSTANT.THIRD_VERSION;
         }
+
         private void new_data_cheat(ulong address, string type, string data, bool lock_, string description) {
             try {
                 int sectionID = processManager.MappedSectionList.GetMappedSectionID(address);
@@ -566,7 +578,8 @@ namespace PS4_Cheater {
                 DataCheat dataCheat = new DataCheat(dataCheatOperator, addressCheatOperator, lock_, description, processManager);
                 add_new_row_to_cheat_list_view(dataCheat);
                 cheatList.Add(dataCheat);
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message, exception.Source, MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
         }
@@ -575,40 +588,41 @@ namespace PS4_Cheater {
             try {
                 switch (new_scan_btn.Text) {
                     case CONSTANT.FIRST_SCAN:
-                    if (MessageBox.Show("search size:" + (processManager.MappedSectionList.TotalMemorySize / 1024).ToString() + "KB") != DialogResult.OK) {
-                        return;
-                    }
-                    memoryHelper.InitMemoryHandler((string)valueTypeList.SelectedItem, (string)compareTypeList.SelectedItem, alignment_box.Checked, value_box.Text.Length);
+                        if (MessageBox.Show("search size:" + (processManager.MappedSectionList.TotalMemorySize / 1024).ToString() + "KB") != DialogResult.OK) {
+                            return;
+                        }
+                        memoryHelper.InitMemoryHandler((string)valueTypeList.SelectedItem, (string)compareTypeList.SelectedItem, alignment_box.Checked, value_box.Text.Length);
 
-                    setButtons(false);
-                    new_scan_btn.Enabled = true;
-                    valueTypeList.Enabled = false;
-                    alignment_box.Enabled = false;
-                    //section_list_box.lo = false;
+                        setButtons(false);
+                        new_scan_btn.Enabled = true;
+                        valueTypeList.Enabled = false;
+                        alignment_box.Enabled = false;
+                        //section_list_box.lo = false;
 
-                    new_scan_worker.RunWorkerAsync();
+                        new_scan_worker.RunWorkerAsync();
 
-                    new_scan_btn.Text = CONSTANT.STOP;
-                    break;
+                        new_scan_btn.Text = CONSTANT.STOP;
+                        break;
 
                     case CONSTANT.NEW_SCAN:
-                    valueTypeList.Enabled = true;
-                    alignment_box.Enabled = true;
-                    //section_list_box.Enabled = true;
-                    refresh_btn.Enabled = false;
-                    next_scan_btn.Enabled = false;
-                    new_scan_btn.Text = CONSTANT.FIRST_SCAN;
+                        valueTypeList.Enabled = true;
+                        alignment_box.Enabled = true;
+                        //section_list_box.Enabled = true;
+                        refresh_btn.Enabled = false;
+                        next_scan_btn.Enabled = false;
+                        new_scan_btn.Text = CONSTANT.FIRST_SCAN;
 
-                    result_list_view.Items.Clear();
-                    processManager.MappedSectionList.ClearResultList();
-                    InitCompareTypeListOfFirstScan();
-                    break;
+                        result_list_view.Items.Clear();
+                        processManager.MappedSectionList.ClearResultList();
+                        InitCompareTypeListOfFirstScan();
+                        break;
 
                     case CONSTANT.STOP:
-                    new_scan_worker.CancelAsync();
-                    break;
+                        new_scan_worker.CancelAsync();
+                        break;
                 };
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
@@ -687,10 +701,12 @@ namespace PS4_Cheater {
                     next_scan_btn.Enabled = true;
                     next_scan_btn.Text = CONSTANT.STOP;
                     next_scan_worker.RunWorkerAsync();
-                } else if (next_scan_btn.Text == CONSTANT.STOP) {
+                }
+                else if (next_scan_btn.Text == CONSTANT.STOP) {
                     next_scan_worker.CancelAsync();
                 }
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
@@ -745,8 +761,10 @@ namespace PS4_Cheater {
 
         private void processes_comboBox_SelectedIndexChanged(object sender, EventArgs e) {
             try {
+                // Clear both the Result and Selected memory regions lists
                 section_list_box.Items.Clear();
                 result_list_view.Items.Clear();
+
                 new_scan_btn.Enabled = true;
                 valueTypeList.Enabled = true;
                 compareTypeList.Enabled = true;
@@ -757,6 +775,7 @@ namespace PS4_Cheater {
                     msg.Text = "No process information found.";
                     return;
                 }
+
                 ProcessInfo processInfo = (ProcessInfo)maybeProcessInfo;
 
                 Util.DefaultProcessID = processInfo.pid;
@@ -773,7 +792,8 @@ namespace PS4_Cheater {
                     section_list_box.Items.Add(processManager.MappedSectionList.GetSectionName(i), false);
                 }
                 section_list_box.EndUpdate();
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
@@ -788,7 +808,8 @@ namespace PS4_Cheater {
                     dataCheatOperator.Set(destOperator.GetRuntime());
                     row.Cells[CHEAT_LIST_VALUE].Value = dataCheatOperator.Display();
                 }
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
@@ -800,10 +821,12 @@ namespace PS4_Cheater {
                     refresh_btn.Enabled = true;
                     refresh_btn.Text = CONSTANT.STOP;
                     update_result_list_worker.RunWorkerAsync();
-                } else if (refresh_btn.Text == CONSTANT.STOP) {
+                }
+                else if (refresh_btn.Text == CONSTANT.STOP) {
                     update_result_list_worker.CancelAsync();
                 }
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
@@ -892,7 +915,8 @@ namespace PS4_Cheater {
             Thread consumer = null;
             if (isFirstScan) {
                 consumer = new Thread(comparer_thread.ResultListOfNewScan);
-            } else {
+            }
+            else {
                 consumer = new Thread(comparer_thread.ResultListOfNextScan);
             }
             consumer.Start();
@@ -947,26 +971,27 @@ namespace PS4_Cheater {
                 string patch_path = Application.StartupPath;
                 switch (version_list.SelectedIndex) {
                     case VERSION_LIST_702:
-                    patch_path += @"\payloads\7.02\";
-                    break;
+                        patch_path += @"\payloads\7.02\";
+                        break;
 
                     case VERSION_LIST_672:
-                    patch_path += @"\payloads\6.72\";
-                    break;
+                        patch_path += @"\payloads\6.72\";
+                        break;
 
                     case VERSION_LIST_505:
-                    patch_path += @"\payloads\5.05\";
-                    break;
+                        patch_path += @"\payloads\5.05\";
+                        break;
 
                     default:
-                    throw new System.ArgumentException("Unknown version.");
+                        throw new System.ArgumentException("Unknown version.");
                 }
 
                 this.send_pay_load(this.ip_box.Text, patch_path + @"ps4debug.bin", Convert.ToInt32(this.port_box.Text));
                 Thread.Sleep(1000);
                 this.msg.ForeColor = Color.Green;
                 this.msg.Text = "ps4debug.bin injected successfully!";
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 MessageBox.Show(exception.Message, exception.Source, MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
         }
@@ -1092,16 +1117,16 @@ namespace PS4_Cheater {
         private void version_list_SelectedIndexChanged(object sender, EventArgs e) {
             switch (version_list.SelectedIndex) {
                 case VERSION_LIST_702:
-                Util.Version = 702;
-                break;
+                    Util.Version = 702;
+                    break;
 
                 case VERSION_LIST_672:
-                Util.Version = 672;
-                break;
+                    Util.Version = 672;
+                    break;
 
                 case VERSION_LIST_505:
-                Util.Version = 505;
-                break;
+                    Util.Version = 505;
+                    break;
             }
         }
 
