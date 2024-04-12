@@ -919,23 +919,49 @@ namespace PS4_Cheater {
             cheat_list.RemoveAt(idx);
         }
 
+        /// <summary> Function saves the current cheat table to a new file </summary>
         public void SaveFile(string path, string prcessName, ProcessManager processManager) {
-            GameInfo gameInfo = new GameInfo();
-            string save_buf = CONSTANT.MAJOR_VERSION + "."
-                + CONSTANT.SECONDARY_VERSION
-                + "|" + prcessName
-                + "|ID:" + gameInfo.GameID
-                + "|VER:" + gameInfo.Version
-                + "|FM:" + Util.Version
-                + "\n";
+            // First we check if a file with the path specified by <path> already
+            // exists, and if the case we prompt the user with a question, before
+            // continuing with the saving of the cheat table
+            if (File.Exists(path)) {
+                var prompt = MessageBox.Show(
+                    // Message box content
+                    $"A File with the path {path} already exists!\nDo you wish to continue?",
+                    // Message box title
+                    "OH Warning! You're about to overwrite a file!!",
+                    // Options (Show a Yes or No button)
+                    MessageBoxButtons.YesNo
+                );
 
-            for (int i = 0; i < cheat_list.Count; ++i) {
-                save_buf += cheat_list[i].ToString();
+                // If the user pressed No, then we return early
+                if (prompt != DialogResult.Yes)
+                    return;
             }
 
-            StreamWriter myStream = new StreamWriter(path);
-            myStream.Write(save_buf);
-            myStream.Close();
+            // Create/Initialize a new <GameInfo> object
+            GameInfo gameInfo = new GameInfo();
+
+            // Obtain both the Constant values of Major and Secondary Version
+            uint mjr_version = CONSTANT.MAJOR_VERSION;
+            uint snd_version = CONSTANT.SECONDARY_VERSION;
+
+            // Will contain the cheat table data
+            string save_buf;
+
+            // Begin to build the Buffer which will hold the cheat table to be saved
+            // to a new file with the path specified by <path>
+            save_buf = $"{mjr_version}.{snd_version}|{prcessName}|ID:{gameInfo.GameID}|";
+            save_buf += $"VER: {gameInfo.Version}|FM: {Util.Version}\n";
+
+            // Then go trough each one of the entries in the <cheat_list> array, and
+            // append the string version of them to the buffer
+            for (int i = 0; i < cheat_list.Count; ++i)
+                save_buf += cheat_list[i].ToString();
+
+            // Finally we write the cheat table save data to the file with the path
+            // specified by <path>
+            File.WriteAllText(path, save_buf);
         }
     }
 }
