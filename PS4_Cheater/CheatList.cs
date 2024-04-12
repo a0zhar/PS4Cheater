@@ -466,24 +466,17 @@ namespace PS4_Cheater {
 
         public long Offset { get; set; }
 
-        public override string Display() {
-            return Offset.ToString("X16");
-        }
+        /// <summary> Gets and returns a string representing the 16-bit hexadecimal value of [Offset]? </summary>
+        public override string Display() => Offset.ToString("X16");
 
-        public override string Dump(bool simpleFormat) {
-            string save_buf = "";
-            save_buf += "+";
-            save_buf += Offset.ToString("X");
-            return save_buf;
-        }
+        /// <summary> Returns a string in the following format: "+[hexadecimal version of Offset here]" </summary>
+        public override string Dump(bool simpleFormat) => $"+{Offset:X}";
 
-        public override byte[] Get(int idx = 0) {
-            return BitConverter.GetBytes(Offset);
-        }
+        /// <summary> Gets and returns the byte array representation of [Offset] </summary>
+        public override byte[] Get(int idx = 0) => BitConverter.GetBytes(Offset);
 
-        public override byte[] GetRuntime() {
-            return BitConverter.GetBytes(Offset);
-        }
+        /// <summary> Gets and returns the byte array representation of [Offset] at runtime? </summary>
+        public override byte[] GetRuntime() => BitConverter.GetBytes(Offset);
 
         public override bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
             Offset = Int64.Parse(cheat_elements[start_idx], NumberStyles.HexNumber);
@@ -495,17 +488,16 @@ namespace PS4_Cheater {
             Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
         }
 
-        public void Set(long offset) {
-            this.Offset = offset;
-        }
+        /// <summary> Sets the value of the Class variable [Offset] to the value specified by the [offset] param </summary>
+        public void Set(long offset) => this.Offset = offset;
 
         public override void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
             Offset = BitConverter.ToInt64(SourceCheatOperator.Get(), 0);
         }
 
-        public override string ToString(bool simple) {
-            return Offset.ToString("X16");
-        }
+        /// <summary> Returns a string representation of the [Offset] in 16-bit hexadecimal format? </summary>
+        public override string ToString(bool simple)
+            => Offset.ToString("X16");
     }
 
     public class SimplePointerCheat : Cheat {
@@ -551,7 +543,7 @@ namespace PS4_Cheater {
 
             ulong flag = ulong.Parse(cheat_elements[start_idx], NumberStyles.HexNumber);
 
-            Lock = flag == 1 ? true : false;
+            Lock = flag == 1;
 
             Description = cheat_elements[start_idx + 1];
 
@@ -563,8 +555,8 @@ namespace PS4_Cheater {
             string should_lock = Lock ? "1" : "0";
 
             // Build new cheat list entry?
-            string save_buf = "";
-            save_buf += $"simple pointer|pointer|{Destination.Dump(true)}|data|{Source.Dump(true)}";
+            string save_buf;
+            save_buf = $"simple pointer|pointer|{Destination.Dump(true)}|data|{Source.Dump(true)}";
             save_buf += $"{should_lock}|{Description}|\n";
 
             // Return the newly built cheat entry
@@ -597,9 +589,6 @@ namespace PS4_Cheater {
         public override string Display() => $"p->{GetAddress():X}";
 
         // TODO: Comment this function
-        public override byte[] Get(int idx = 0) => Address.Get();
-
-        // TODO: Comment this function
         public override string Dump(bool simpleFormat) {
             string dump_buf;
 
@@ -616,6 +605,9 @@ namespace PS4_Cheater {
             // Then we return the dump buffer
             return dump_buf;
         }
+
+        // TODO: Comment this function
+        public override byte[] Get(int idx = 0) => Address.Get();
 
         public override byte[] GetRuntime() {
             return MemoryHelper.ReadMemory(GetAddress(), MemoryHelper.Length);
