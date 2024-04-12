@@ -240,20 +240,16 @@ namespace PS4_Cheater {
 
         public bool Lock { get; set; }
         protected CheatOperator Destination { get; set; }
-
         protected CheatOperator Source { get; set; }
 
-        public CheatOperator GetDestination() {
-            return Destination;
-        }
+        /// <summary> Returns the Current value of [Destination] </summary>
+        public CheatOperator GetDestination() => Destination;
 
-        public CheatOperator GetSource() {
-            return Source;
-        }
+        /// <summary> Returns the Current value of [Source] </summary>
+        public CheatOperator GetSource() => Source;
 
-        public virtual bool Parse(string[] cheat_elements) {
-            return false;
-        }
+        /// <summary> Returns false, whats the point of this function lol? </summary>
+        public virtual bool Parse(string[] cheat_elements) => false;
     }
 
     public class CheatOperator {
@@ -279,39 +275,34 @@ namespace PS4_Cheater {
             }
         }
 
-        public virtual string Display() {
-            return null;
-        }
+        /// <summary> Returns null always, whats the point of this? </summary
+        public virtual string Display() => null;
 
-        public virtual string Dump(bool simpleFormat) {
-            return null;
-        }
+        /// <summary> Returns false, whats the point of this function lol? </summary>
+        public virtual string Dump(bool simpleFormat) => null;
 
-        public virtual byte[] Get(int idx = 0) {
-            return null;
-        }
+        /// <summary> Returns null always, whats the point of this? </summary
+        public virtual byte[] Get(int idx = 0) => null;
 
-        public virtual byte[] GetRuntime() {
-            return null;
-        }
+        /// <summary> Returns null always, whats the point of this? </summary
+        public virtual byte[] GetRuntime() => null;
 
-        public virtual int GetSectionID() {
-            return -1;
-        }
+        /// <summary> Returns -1 always, whats the point of this? </summary
+        public virtual int GetSectionID() => -1;
 
-        public virtual bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format) {
-            return false;
-        }
+        /// <summary> Returns false always, whats the point of this? </summary
+        public virtual bool Parse(string[] cheat_elements, ref int start_idx, bool simple_format)
+            => false;
 
-        public virtual void Set(CheatOperator SourceCheatOperator, int idx = 0) {
-        }
+        /// <summary> This function does nothing whats the point? </summary>
+        public virtual void Set(CheatOperator SourceCheatOperator, int idx = 0) { }
 
-        public virtual void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) {
-        }
+        /// <summary> This function does nothing whats the point? </summary>
+        public virtual void SetRuntime(CheatOperator SourceCheatOperator, int idx = 0) { }
 
-        public virtual string ToString(bool simple) {
-            return null;
-        }
+        /// <summary> Returns null always, whats the point of this? </summary
+        public virtual string ToString(bool simple)
+            => null;
     }
 
     public class DataCheat : Cheat {
