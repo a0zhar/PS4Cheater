@@ -1,4 +1,4 @@
-﻿using Be.Windows.Forms;
+using Be.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -6,16 +6,13 @@ using System.Windows.Forms;
 namespace PS4_Cheater {
 
     public partial class HexEditor : Form {
-        private MappedSection section;
+        private const int page_size = 8 * 1024 * 1024;
+        private int column;
+        private long line;
         private MemoryHelper memoryHelper;
-
         private int page;
         private int page_count;
-        private long line;
-        private int column;
-
-        private const int page_size = 8 * 1024 * 1024;
-
+        private MappedSection section;
         public HexEditor(MemoryHelper memoryHelper, int offset, MappedSection section) {
             InitializeComponent();
 
@@ -32,6 +29,74 @@ namespace PS4_Cheater {
                 ulong end = section.Start + (ulong)(i + 1) * page_size;
                 page_list.Items.Add((i + 1).ToString() + String.Format(" {0:X}-{1:X}", start, end));
             }
+        }
+
+        private void commit_btn_Click(object sender, EventArgs e) {
+            MemoryViewByteProvider mvbp = (MemoryViewByteProvider)this.hexBox.ByteProvider;
+            if (mvbp.HasChanges()) {
+                byte[] buffer = mvbp.Bytes.ToArray();
+                List<int> change_list = mvbp.change_list;
+
+                for (int i = 0; i < change_list.Count; ++i) {
+                    byte[] b = { buffer[change_list[i]] };
+                    memoryHelper.WriteMemory(section.Start + (ulong)(page * page_size + change_list[i]), b);
+                }
+                mvbp.change_list.Clear();
+            }
+        }
+
+        private int divup(int sum, int div) {
+            return sum / div + ((sum % div != 0) ? 1 : 0);
+        }
+
+        private void find_Click(object sender, EventArgs e) {
+            FindOptions findOptions = new FindOptions();
+            findOptions.Type = FindType.Hex;
+            findOptions.Hex = MemoryHelper.string_to_hex_bytes(input_box.Text);
+            hexBox.Find(findOptions);
+        }
+
+        private void HexEdit_FormClosing(object sender, FormClosingEventArgs e) {
+        }
+
+        private void HexEdit_Load(object sender, EventArgs e) {
+            page_list.SelectedIndex = page;
+        }
+
+        private void next_btn_Click(object sender, EventArgs e) {
+            if (page + 1 >= page_count) {
+                return;
+            }
+
+            page++;
+            line = 0;
+            column = 0;
+
+            page_list.SelectedIndex = page;
+        }
+
+        private void page_list_SelectedIndexChanged(object sender, EventArgs e) {
+            page = page_list.SelectedIndex;
+
+            update_ui(page, line);
+        }
+
+        private void previous_btn_Click(object sender, EventArgs e) {
+            if (page <= 0) {
+                return;
+            }
+
+            page--;
+            line = 0;
+            column = 0;
+            page_list.SelectedIndex = page;
+        }
+
+        private void refresh_btn_Click(object sender, EventArgs e) {
+            page_list.SelectedIndex = page;
+            line = hexBox.CurrentLine - 1;
+            column = 0;
+            update_ui(page, line);
         }
 
         private void update_ui(int page, long line) {
@@ -51,74 +116,6 @@ namespace PS4_Cheater {
                 hexBox.SelectionLength = 4;
                 hexBox.ScrollByteIntoView((line + hexBox.Height / (int)hexBox.CharSize.Height - 1) * hexBox.BytesPerLine + column);
             }
-        }
-
-        private void HexEdit_Load(object sender, EventArgs e) {
-            page_list.SelectedIndex = page;
-        }
-
-        private void HexEdit_FormClosing(object sender, FormClosingEventArgs e) {
-        }
-
-        private int divup(int sum, int div) {
-            return sum / div + ((sum % div != 0) ? 1 : 0);
-        }
-
-        private void next_btn_Click(object sender, EventArgs e) {
-            if (page + 1 >= page_count) {
-                return;
-            }
-
-            page++;
-            line = 0;
-            column = 0;
-
-            page_list.SelectedIndex = page;
-        }
-
-        private void previous_btn_Click(object sender, EventArgs e) {
-            if (page <= 0) {
-                return;
-            }
-
-            page--;
-            line = 0;
-            column = 0;
-            page_list.SelectedIndex = page;
-        }
-
-        private void page_list_SelectedIndexChanged(object sender, EventArgs e) {
-            page = page_list.SelectedIndex;
-
-            update_ui(page, line);
-        }
-
-        private void commit_btn_Click(object sender, EventArgs e) {
-            MemoryViewByteProvider mvbp = (MemoryViewByteProvider)this.hexBox.ByteProvider;
-            if (mvbp.HasChanges()) {
-                byte[] buffer = mvbp.Bytes.ToArray();
-                List<int> change_list = mvbp.change_list;
-
-                for (int i = 0; i < change_list.Count; ++i) {
-                    byte[] b = { buffer[change_list[i]] };
-                    memoryHelper.WriteMemory(section.Start + (ulong)(page * page_size + change_list[i]), b);
-                }
-                mvbp.change_list.Clear();
-            }
-        }
-
-        private void refresh_btn_Click(object sender, EventArgs e) {
-            page_list.SelectedIndex = page;
-            line = hexBox.CurrentLine - 1;
-            column = 0;
-            update_ui(page, line);
-        }
-
-        private void find_Click(object sender, EventArgs e) {
-            FindOptions findOptions = new FindOptions();
-            findOptions.Type = FindType.Hex;
-            findOptions.Hex = MemoryHelper.string_to_hex_bytes(input_box.Text);
-            hexBox.Find(findOptions);
         }
     }
 }
