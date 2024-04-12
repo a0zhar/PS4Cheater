@@ -370,17 +370,41 @@ namespace PS4_Cheater {
 
         private void get_processes_btn_Click(object sender, EventArgs e) {
             try {
-                MemoryHelper.Connect(ip_box.Text);
+                // Attempt to establish a connection to the PS4 System, and upon failure
+                // show the error message, and return early
+                if (!MemoryHelper.Connect(ip_box.Text)) {
+                    MessageBox.Show($"Unable to Connect to the PS4 using the IP ({ip_box.Text})");
+                    return;
+                }
 
+                // Clear any previous processes listed in the combobox containing a list
+                // of all running ps4 processes
                 this.processes_comboBox.Items.Clear();
-                ProcessList pl = MemoryHelper.GetProcessList();
-                foreach (Process process in pl.processes) {
+
+                // Then attempt to get the list of current running processes from the ps4
+                ProcessList process_list = MemoryHelper.GetProcessList();
+
+                // Then we try to go trough each and every process present in the list,
+                // adding each one to the combobox whose purpose is to contain a list of
+                // every currently running process on the ps4 system
+                foreach (Process process in process_list.processes) {
                     this.processes_comboBox.Items.Add(process.name);
                 }
+
+                // Make sure that no process is selected by default
                 this.processes_comboBox.SelectedIndex = 0;
             }
             catch (Exception exception) {
-                MessageBox.Show(exception.Message, exception.Source, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(
+                    // Messagebox content
+                    "An exception occured while trying to fetch the process list from the PS4 System!\n" +
+                    "Here are the Exception Details:\n" +
+                    $"Message {exception.Message} | Source {exception.Source}",
+
+                    "Oops an error occured", // Messagebox Title
+                    MessageBoxButtons.OK,    // Options
+                    MessageBoxIcon.Hand      // Icon
+                );
             }
         }
 
@@ -427,8 +451,9 @@ namespace PS4_Cheater {
 
         private void InitCompareTypeListOfNextScan() {
             string selected_type = (string)compareTypeList.SelectedItem;
+            string value_type = (string)valueTypeList.SelectedItem;
             compareTypeList.Items.Clear();
-            switch (MemoryHelper.GetValueTypeByString((string)valueTypeList.SelectedItem)) {
+            switch (MemoryHelper.GetValueTypeByString(value_type)) {
                 case ValueType.ULONG_TYPE:
                 case ValueType.UINT_TYPE:
                 case ValueType.USHORT_TYPE:
@@ -453,9 +478,8 @@ namespace PS4_Cheater {
             int list_count = compareTypeList.Items.Count;
 
             for (; list_idx < list_count; ++list_idx) {
-                if ((string)compareTypeList.Items[list_idx] == selected_type) {
+                if ((string)compareTypeList.Items[list_idx] == selected_type)
                     break;
-                }
             }
 
             compareTypeList.SelectedIndex = list_idx == list_count ? 0 : list_idx;
@@ -466,9 +490,8 @@ namespace PS4_Cheater {
             open_file_dialog.FilterIndex = 1;
             open_file_dialog.RestoreDirectory = true;
 
-            if (open_file_dialog.ShowDialog() != DialogResult.OK) {
+            if (open_file_dialog.ShowDialog() != DialogResult.OK)
                 return;
-            }
 
             cheat_list_view.Rows.Clear();
             cheatList.LoadFile(open_file_dialog.FileName, processManager, processes_comboBox);
@@ -485,38 +508,24 @@ namespace PS4_Cheater {
         }
 
         private void main_FormClosing(object sender, FormClosingEventArgs e) {
-            string ip = Config.getSetting("ip");
             string version = "";
             switch (version_list.SelectedIndex) {
-                case VERSION_LIST_702:
-                    version = "7.02";
-                    break;
-
-                case VERSION_LIST_672:
-                    version = "6.72";
-                    break;
-
-                case VERSION_LIST_505:
-                    version = "5.05";
-                    break;
-
-                default:
-                    break;
+                case VERSION_LIST_702: version = "7.02"; break;
+                case VERSION_LIST_672: version = "6.72"; break;
+                case VERSION_LIST_505: version = "5.05"; break;
+                default: break;
             }
 
-            if (!string.IsNullOrWhiteSpace(version)) {
+            if (!string.IsNullOrWhiteSpace(version))
                 Config.updateSetting("ps4 version", version);
-            }
 
-            if (!string.IsNullOrWhiteSpace(ip_box.Text)) {
+            if (!string.IsNullOrWhiteSpace(ip_box.Text))
                 Config.updateSetting("ip", ip_box.Text);
-            }
 
-            if (!string.IsNullOrWhiteSpace(port_box.Text)) {
+            if (!string.IsNullOrWhiteSpace(port_box.Text))
                 Config.updateSetting("port", port_box.Text);
-            }
 
-            //MemoryHelper.Disconnect();
+            // MemoryHelper.Disconnect();
         }
 
         private void main_Load(object sender, EventArgs e) {
@@ -526,35 +535,40 @@ namespace PS4_Cheater {
             string version = Config.getSetting("ps4 version");
             string port = Config.getSetting("port");
             string ip = Config.getSetting("ip");
-            if (version == "7.02") {
-                version_list.SelectedIndex = VERSION_LIST_702;
-                Util.Version = 702;
-            }
-            else if (version == "6.72") {
-                version_list.SelectedIndex = VERSION_LIST_672;
-                Util.Version = 672;
-            }
-            else if (version == "5.05") {
-                version_list.SelectedIndex = VERSION_LIST_505;
-                Util.Version = 505;
-            }
-            else {
-                Util.Version = 702;
-                version_list.SelectedIndex = VERSION_LIST_DEFAULT;
-            }
 
-            if (!string.IsNullOrEmpty(ip)) {
+            switch (version) {
+                case "5.05":
+                    version_list.SelectedIndex = VERSION_LIST_505;
+                    Util.Version = 505;
+                    break;
+
+                case "6.72":
+                    version_list.SelectedIndex = VERSION_LIST_672;
+                    Util.Version = 672;
+                    break;
+
+                case "7.02":
+                    version_list.SelectedIndex = VERSION_LIST_702;
+                    Util.Version = 702;
+                    break;
+
+                default:
+                    Util.Version = 702;
+                    version_list.SelectedIndex = VERSION_LIST_DEFAULT;
+                    break;
+            };
+
+            if (!string.IsNullOrEmpty(ip))
                 ip_box.Text = ip;
-            }
 
-            if (!string.IsNullOrEmpty(port)) {
+            if (!string.IsNullOrEmpty(port))
                 port_box.Text = port;
-            }
 
             this.next_scan_btn.Text = CONSTANT.NEXT_SCAN;
             this.new_scan_btn.Text = CONSTANT.FIRST_SCAN;
             this.refresh_btn.Text = CONSTANT.REFRESH;
-            this.Text += " " + CONSTANT.MAJOR_VERSION + "." + CONSTANT.SECONDARY_VERSION + "." + CONSTANT.THIRD_VERSION;
+
+            this.Text += $" {CONSTANT.MAJOR_VERSION}.{CONSTANT.SECONDARY_VERSION}.{CONSTANT.THIRD_VERSION}";
         }
 
         private void new_data_cheat(ulong address, string type, string data, bool lock_, string description) {
