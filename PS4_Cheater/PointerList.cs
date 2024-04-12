@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -16,31 +16,9 @@ namespace PS4_Cheater {
         }
     }
 
-    public class PointerPath {
-        public List<ulong> pointerPath = new List<ulong>();
-
-        public void AddRange(List<ulong> pointerList) {
-            pointerPath.AddRange(pointerList);
-        }
-
-        public void Add(ulong pointer) {
-            pointerPath.Add(pointer);
-        }
-
-        public ulong this[int index] {
-            get {
-                return pointerPath[index];
-            }
-        }
-
-        public int Count { get { return pointerPath.Count; } }
-    }
-
     public class PointerList {
         private List<Pointer> pointer_list_order_by_address;
         private List<Pointer> pointer_list_order_by_pointer_value;
-
-        public bool Stop { get; set; }
 
         public PointerList() {
             pointer_list_order_by_address = new List<Pointer>();
@@ -51,37 +29,8 @@ namespace PS4_Cheater {
 
         public event NewPathGeneratedHandler NewPathGeneratedEvent;
 
-        private class ComparerByAddress : IComparer<Pointer> {
-
-            public int Compare(Pointer x, Pointer y) {
-                if (x.Address == y.Address) {
-                    return 0;
-                } else if (x.Address < y.Address) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        }
-
-        private class ComparerByPointerValue : IComparer<Pointer> {
-
-            public int Compare(Pointer x, Pointer y) {
-                if (x.PointerValue == y.PointerValue) {
-                    if (x.Address == y.Address) {
-                        return 0;
-                    } else if (x.Address < y.Address) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                } else if (x.PointerValue < y.PointerValue) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        }
+        public int Count { get { return pointer_list_order_by_address.Count; } }
+        public bool Stop { get; set; }
 
         public void Add(Pointer pointer) {
             pointer_list_order_by_address.Add(pointer);
@@ -93,11 +42,76 @@ namespace PS4_Cheater {
             pointer_list_order_by_pointer_value.Clear();
         }
 
+        public void FindPointerList(ulong address, List<int> range) {
+            List<long> path_offset = new List<long>();
+            List<Pointer> path_address = new List<Pointer>();
+            PointerFinder(path_offset, path_address, address, range, 0);
+        }
+
+        public ulong GetTailAddress(PointerResult pointerResult, MappedSectionList mappedSectionList) {
+            ulong tailAddress = pointerResult.GetBaseAddress(mappedSectionList);
+
+            if (pointerResult.Offsets.Length > 0) {
+                int j = 0;
+                Pointer pointer = new Pointer();
+                int index = GetPointerByAddress(tailAddress, ref pointer);
+                if (index < 0) return 0;
+
+                tailAddress = pointer.PointerValue;
+                for (j = 0; j < pointerResult.Offsets.Length - 1; ++j) {
+                    index = GetPointerByAddress((ulong)((long)tailAddress + pointerResult.Offsets[j]), ref pointer);
+                    if (index < 0) return 0;
+
+                    tailAddress = pointer.PointerValue;
+                }
+
+                tailAddress = (ulong)((long)tailAddress + pointerResult.Offsets[j]);
+            }
+
+            return tailAddress;
+        }
+
+        public void Init() {
+            pointer_list_order_by_address.Sort(new ComparerByAddress());
+            pointer_list_order_by_pointer_value.Sort(new ComparerByPointerValue());
+        }
+
+        public void Load() {
+            string ADDRESS_NAME = "D:\\name.txt";
+
+            string[] lines = File.ReadAllLines(ADDRESS_NAME);
+
+            for (int i = 0; i < lines.Length; ++i) {
+                string[] elems = lines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                ulong Address = UInt64.Parse(elems[0]);
+                ulong PointerValue = UInt64.Parse(elems[1]);
+
+                Pointer pointer = new Pointer(Address, PointerValue);
+                pointer_list_order_by_address.Add(pointer);
+                pointer_list_order_by_pointer_value.Add(pointer);
+            }
+
+            pointer_list_order_by_pointer_value.Sort(new ComparerByPointerValue());
+        }
+
+        public void Save() {
+            string ADDRESS_NAME = "D:\\name.txt";
+
+            string[] lines = new string[pointer_list_order_by_address.Count];
+
+            for (int i = 0; i < pointer_list_order_by_address.Count; ++i) {
+                lines[i] = pointer_list_order_by_address[i].Address.ToString() + " " + pointer_list_order_by_address[i].PointerValue.ToString();
+            }
+            File.WriteAllLines(ADDRESS_NAME, lines);
+        }
+
         private static int BinarySearchByAddress(List<Pointer> pointerList, int low, int high, ulong address) {
             int mid = (low + high) / 2;
             if (low > high) {
                 return -1;
-            } else {
+            }
+            else {
                 if (pointerList[mid].Address == address)
                     return mid;
                 else if (pointerList[mid].Address > address) {
@@ -105,7 +119,8 @@ namespace PS4_Cheater {
                         return mid - 1;
                     }
                     return BinarySearchByAddress(pointerList, low, mid - 1, address);
-                } else {
+                }
+                else {
                     if (mid + 1 < pointerList.Count && pointerList[mid + 1].Address >= address) {
                         return mid + 1;
                     }
@@ -123,9 +138,11 @@ namespace PS4_Cheater {
                 middle = (low + high) / 2;
                 if (pointerValue > pointerList[middle].PointerValue) {
                     low = middle + 1;
-                } else if (pointerValue < pointerList[middle].PointerValue) {
+                }
+                else if (pointerValue < pointerList[middle].PointerValue) {
                     high = middle - 1;
-                } else {
+                }
+                else {
                     return middle;
                 }
             }
@@ -133,27 +150,13 @@ namespace PS4_Cheater {
             return -1;
         }
 
-        public ulong GetTailAddress(PointerResult pointerResult, MappedSectionList mappedSectionList) {
-            ulong tailAddress = pointerResult.GetBaseAddress(mappedSectionList);
+        private int GetPointerByAddress(ulong address, ref Pointer pointer) {
+            int index = BinarySearchByAddress(pointer_list_order_by_address, 0, pointer_list_order_by_address.Count - 1, address);
+            if (index < 0)
+                return index;
 
-            if (pointerResult.Offsets.Length > 0) {
-                int j = 0;
-                Pointer pointer = new Pointer();
-                int index = GetPointerByAddress(tailAddress, ref pointer);
-                if (index < 0)
-                    return 0;
-                tailAddress = pointer.PointerValue;
-                for (j = 0; j < pointerResult.Offsets.Length - 1; ++j) {
-                    index = GetPointerByAddress((ulong)((long)tailAddress + pointerResult.Offsets[j]), ref pointer);
-                    if (index < 0)
-                        return 0;
-                    tailAddress = pointer.PointerValue;
-                }
-
-                tailAddress = (ulong)((long)tailAddress + pointerResult.Offsets[j]);
-            }
-
-            return tailAddress;
+            pointer = pointer_list_order_by_address[index];
+            return index;
         }
 
         private List<Pointer> GetPointerListByValue(ulong pointerValue) {
@@ -175,22 +178,14 @@ namespace PS4_Cheater {
                 if (pointer_list_order_by_pointer_value[i].PointerValue == pointerValue) {
                     find = true;
                     pointerList.Add(pointer_list_order_by_pointer_value[i]);
-                } else {
+                }
+                else {
                     if (find)
                         break;
                 }
             }
 
             return pointerList;
-        }
-
-        private int GetPointerByAddress(ulong address, ref Pointer pointer) {
-            int index = BinarySearchByAddress(pointer_list_order_by_address, 0, pointer_list_order_by_address.Count - 1, address);
-            if (index < 0)
-                return index;
-
-            pointer = pointer_list_order_by_address[index];
-            return index;
         }
 
         private void PointerFinder(List<long> path_offset, List<Pointer> path_address,
@@ -258,54 +253,54 @@ namespace PS4_Cheater {
                 }
             }
 
-            if (Stop) {
-                return;
-            }
+            if (Stop) return;
 
             NewPathGeneratedEvent?.Invoke(this, path_offset, path_address);
         }
 
-        public void Save() {
-            string ADDRESS_NAME = "D:\\name.txt";
+        private class ComparerByAddress : IComparer<Pointer> {
 
-            string[] lines = new string[pointer_list_order_by_address.Count];
-
-            for (int i = 0; i < pointer_list_order_by_address.Count; ++i) {
-                lines[i] = pointer_list_order_by_address[i].Address.ToString() + " " + pointer_list_order_by_address[i].PointerValue.ToString();
+            public int Compare(Pointer x, Pointer y) {
+                if (x.Address == y.Address)
+                    return 0;
+                else if (x.Address < y.Address)
+                    return -1;
+                else
+                    return 1;
             }
-            File.WriteAllLines(ADDRESS_NAME, lines);
         }
 
-        public void Load() {
-            string ADDRESS_NAME = "D:\\name.txt";
+        private class ComparerByPointerValue : IComparer<Pointer> {
 
-            string[] lines = File.ReadAllLines(ADDRESS_NAME);
-
-            for (int i = 0; i < lines.Length; ++i) {
-                string[] elems = lines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                ulong Address = UInt64.Parse(elems[0]);
-                ulong PointerValue = UInt64.Parse(elems[1]);
-
-                Pointer pointer = new Pointer(Address, PointerValue);
-                pointer_list_order_by_address.Add(pointer);
-                pointer_list_order_by_pointer_value.Add(pointer);
+            public int Compare(Pointer x, Pointer y) {
+                if (x.PointerValue == y.PointerValue) {
+                    if (x.Address == y.Address)
+                        return 0;
+                    else if (x.Address < y.Address)
+                        return -1;
+                    else
+                        return 1;
+                }
+                else if (x.PointerValue < y.PointerValue)
+                    return -1;
+                else
+                    return 1;
             }
+        }
+    }
 
-            pointer_list_order_by_pointer_value.Sort(new ComparerByPointerValue());
+    public class PointerPath {
+        public List<ulong> pointerPath = new List<ulong>();
+
+        public int Count { get { return pointerPath.Count; } }
+
+        public ulong this[int index] {
+            get { return pointerPath[index]; }
         }
 
-        public void Init() {
-            pointer_list_order_by_address.Sort(new ComparerByAddress());
-            pointer_list_order_by_pointer_value.Sort(new ComparerByPointerValue());
-        }
+        public void Add(ulong pointer) => pointerPath.Add(pointer);
 
-        public void FindPointerList(ulong address, List<int> range) {
-            List<long> path_offset = new List<long>();
-            List<Pointer> path_address = new List<Pointer>();
-            PointerFinder(path_offset, path_address, address, range, 0);
-        }
-
-        public int Count { get { return pointer_list_order_by_address.Count; } }
+        public void AddRange(List<ulong> pointerList)
+            => pointerPath.AddRange(pointerList);
     }
 }
