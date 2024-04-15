@@ -1,4 +1,4 @@
-﻿using libdebug;
+using libdebug;
 using PS4_Cheat_Engine.Forms;
 using System;
 using System.Collections.Generic;
@@ -602,11 +602,10 @@ namespace PS4_Cheat_Engine {
                         if (MessageBox.Show($"The Total size to be searched is {_memsize}kb") != DialogResult.OK)
                             return;
 
-                         
                         memoryHelper.InitMemoryHandler(
                             (string)valueTypeList.SelectedItem,
-                            (string)compareTypeList.SelectedItem, 
-                            alignment_box.Checked, 
+                            (string)compareTypeList.SelectedItem,
+                            alignment_box.Checked,
                             value_box.Text.Length
                         );
 
@@ -715,23 +714,27 @@ namespace PS4_Cheat_Engine {
             update_result_list_view(new_scan_worker, false, 80, 0.2f);
         }
 
-
+        /// <summary>
+        /// This function is responsible for update the [msg] label text, when the scanning status has changed
+        /// </summary>
         private void new_scan_worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-            if (e.ProgressPercentage == 0) {
-                msg.Text = "Peeking memory...";
-            }
+            // Contains the percent value representing the the asynchronous new scan task progress
+            var current_progress = e.ProgressPercentage;
 
-            if (e.ProgressPercentage == 80) {
-                msg.Text = "Analysing memory...";
-            }
+            // We handle the current scan progression using switch instead of if-else chain
+            switch (current_progress) {
+                case 0: msg.Text = "Process Memory | Peaking..."; break;
+                case 80: msg.Text = "Process Memory | Analyzing..."; break;
+                case 100:
+                    if (e.UserState is WorkerReturn) {
+                        update_result_list_view_ui((WorkerReturn)e.UserState);
+                    }
+                    msg.Text = "Process Memory has been Scanned!";
+                    break;
+            };
 
-            if (e.ProgressPercentage == 100) {
-                if (e.UserState is WorkerReturn) {
-                    update_result_list_view_ui((WorkerReturn)e.UserState);
-                }
-            }
-
-            progressBar.Value = e.ProgressPercentage;
+            // Update the progress bar value, using the value of <current_progress>
+            progressBar.Value = current_progress;
         }
 
         private void new_scan_worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
