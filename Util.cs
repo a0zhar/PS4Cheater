@@ -1,9 +1,9 @@
 ﻿using libdebug;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Windows.Forms;
+using PS4_Cheat_Engine.Forms;
 
-namespace PS4_Cheater {
+namespace PS4_Cheat_Engine {
 
     internal class GameInfo {
         private const string GAME_INFO_7_02_PROCESS_NAME = "SceCdlgApp";
@@ -36,31 +36,31 @@ namespace PS4_Cheater {
 
             switch (Util.Version) {
                 case 702:
-                process_name = GAME_INFO_7_02_PROCESS_NAME;
-                section_name = GAME_INFO_7_02_SECTION_NAME;
-                id_offset = GAME_INFO_7_02_ID_OFFSET;
-                version_offset = GAME_INFO_7_02_VERSION_OFFSET;
-                section_prot = GAME_INFO_7_02_SECTION_PROT;
-                break;
+                    process_name = GAME_INFO_7_02_PROCESS_NAME;
+                    section_name = GAME_INFO_7_02_SECTION_NAME;
+                    id_offset = GAME_INFO_7_02_ID_OFFSET;
+                    version_offset = GAME_INFO_7_02_VERSION_OFFSET;
+                    section_prot = GAME_INFO_7_02_SECTION_PROT;
+                    break;
 
                 case 672:
-                process_name = GAME_INFO_6_72_PROCESS_NAME;
-                section_name = GAME_INFO_6_72_SECTION_NAME;
-                id_offset = GAME_INFO_6_72_ID_OFFSET;
-                version_offset = GAME_INFO_6_72_VERSION_OFFSET;
-                section_prot = GAME_INFO_6_72_SECTION_PROT;
-                break;
+                    process_name = GAME_INFO_6_72_PROCESS_NAME;
+                    section_name = GAME_INFO_6_72_SECTION_NAME;
+                    id_offset = GAME_INFO_6_72_ID_OFFSET;
+                    version_offset = GAME_INFO_6_72_VERSION_OFFSET;
+                    section_prot = GAME_INFO_6_72_SECTION_PROT;
+                    break;
 
                 case 505:
-                process_name = GAME_INFO_5_05_PROCESS_NAME;
-                section_name = GAME_INFO_5_05_SECTION_NAME;
-                id_offset = GAME_INFO_5_05_ID_OFFSET;
-                version_offset = GAME_INFO_5_05_VERSION_OFFSET;
-                section_prot = GAME_INFO_5_05_SECTION_PROT;
-                break;
+                    process_name = GAME_INFO_5_05_PROCESS_NAME;
+                    section_name = GAME_INFO_5_05_SECTION_NAME;
+                    id_offset = GAME_INFO_5_05_ID_OFFSET;
+                    version_offset = GAME_INFO_5_05_VERSION_OFFSET;
+                    section_prot = GAME_INFO_5_05_SECTION_PROT;
+                    break;
 
                 default:
-                break;
+                    break;
             }
 
             try {
@@ -86,7 +86,8 @@ namespace PS4_Cheater {
                 GameID = GameID.Trim(new char[] { '\0' });
                 Version = System.Text.Encoding.Default.GetString(memoryHelper.ReadMemory(sectionList[0].Start + version_offset, 16));
                 Version = Version.Trim(new char[] { '\0' });
-            } catch {
+            }
+            catch {
             }
         }
     }
@@ -159,32 +160,35 @@ namespace PS4_Cheater {
 
         public static bool addSetting(string key, string value) {
             try {
-                Configuration config = ConfigurationManager.OpenExeConfiguration(fileName);
-                config.AppSettings.Settings.Add(key, value);
-                config.Save();
+                //Configuration config = ConfigurationManager.OpenExeConfiguration(fileName);
+                //config.AppSettings.Settings.Add(key, value);
+                //config.Save();
                 return true;
-            } catch {
+            }
+            catch {
             }
             return false;
         }
 
         public static string getSetting(string key) {
             try {
-                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
-                string value = config.AppSettings.Settings[key].Value;
-                return value;
-            } catch {
+                //Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
+                //string value = config.AppSettings.Settings[key].Value;
+                // return value;
+            }
+            catch {
             }
             return "";
         }
 
         public static bool updateSetting(string key, string newValue) {
             try {
-                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
-                string value = config.AppSettings.Settings[key].Value = newValue;
-                config.Save();
+                // Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
+                // string value = config.AppSettings.Settings[key].Value = newValue;
+                // config.Save();
                 return true;
-            } catch {
+            }
+            catch {
                 addSetting(key, newValue);
             }
             return false;

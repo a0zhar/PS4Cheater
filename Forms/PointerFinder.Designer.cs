@@ -1,7 +1,5 @@
-﻿namespace PS4_Cheater
-{
-    partial class PointerFinder
-    {
+﻿namespace PS4_Cheat_Engine.Forms {
+    partial class PointerFinder {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -11,10 +9,8 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -26,8 +22,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             this.status_strip = new System.Windows.Forms.StatusStrip();
             this.progress_bar = new System.Windows.Forms.ToolStripProgressBar();
             this.msg = new System.Windows.Forms.ToolStripStatusLabel();
@@ -103,8 +98,8 @@
             this.pointer_list_view.AllowUserToAddRows = false;
             this.pointer_list_view.AllowUserToDeleteRows = false;
             this.pointer_list_view.AllowUserToResizeRows = false;
-            this.pointer_list_view.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.pointer_list_view.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pointer_list_view.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.pointer_list_view.Location = new System.Drawing.Point(0, 37);

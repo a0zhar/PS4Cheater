@@ -1,9 +1,7 @@
-﻿namespace PS4_Cheater
-{
+﻿namespace PS4_Cheat_Engine.Forms {
     using System.Drawing;
     using System.Windows.Forms;
-    partial class HexEditor
-    {
+    partial class HexEditor {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -13,10 +11,8 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -28,8 +24,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.hexBox = new Be.Windows.Forms.HexBox();
             this.refresh_btn = new System.Windows.Forms.Button();
@@ -85,7 +80,7 @@
             // 
             // refresh_btn
             // 
-            this.refresh_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.refresh_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.refresh_btn.Location = new System.Drawing.Point(15, 154);
             this.refresh_btn.Name = "refresh_btn";
@@ -97,7 +92,7 @@
             // 
             // previous_btn
             // 
-            this.previous_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.previous_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.previous_btn.Location = new System.Drawing.Point(15, 34);
             this.previous_btn.Name = "previous_btn";
@@ -109,7 +104,7 @@
             // 
             // commit_btn
             // 
-            this.commit_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.commit_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.commit_btn.Location = new System.Drawing.Point(15, 194);
             this.commit_btn.Name = "commit_btn";
@@ -121,7 +116,7 @@
             // 
             // next_btn
             // 
-            this.next_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.next_btn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.next_btn.Location = new System.Drawing.Point(15, 74);
             this.next_btn.Name = "next_btn";
@@ -133,7 +128,7 @@
             // 
             // page_list
             // 
-            this.page_list.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.page_list.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.page_list.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.page_list.FormattingEnabled = true;
