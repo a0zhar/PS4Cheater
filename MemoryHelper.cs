@@ -126,25 +126,6 @@ namespace PS4_Cheat_Engine {
             return false;
         }
 
-        public static CompareType GetCompareByString(string compareTypeString) {
-            switch (compareTypeString) {
-                case CONSTANT.EXACT_VALUE:           return CompareType.EXACT_VALUE;
-                case CONSTANT.FUZZY_VALUE:           return CompareType.FUZZY_VALUE;
-                case CONSTANT.INCREASED_VALUE:       return CompareType.INCREASED_VALUE;
-                case CONSTANT.INCREASED_VALUE_BY:    return CompareType.INCREASED_VALUE_BY;
-                case CONSTANT.DECREASED_VALUE:       return CompareType.DECREASED_VALUE;
-                case CONSTANT.DECREASED_VALUE_BY:    return CompareType.DECREASED_VALUE_BY;
-                case CONSTANT.BIGGER_THAN:           return CompareType.BIGGER_THAN_VALUE;
-                case CONSTANT.SMALLER_THAN:          return CompareType.SMALLER_THAN_VALUE;
-                case CONSTANT.CHANGED_VALUE:         return CompareType.CHANGED_VALUE;
-                case CONSTANT.UNCHANGED_VALUE:       return CompareType.UNCHANGED_VALUE;
-                case CONSTANT.BETWEEN_VALUE:         return CompareType.BETWEEN_VALUE;
-                case CONSTANT.UNKNOWN_INITIAL_VALUE: return CompareType.UNKNOWN_INITIAL_VALUE;
-                default:
-                    throw new Exception("compareType???");
-            }
-        }
-
         public static ProcessInfo? GetProcessInfo(int processID) {
             mutex[0].WaitOne();
             try {
@@ -183,36 +164,37 @@ namespace PS4_Cheat_Engine {
                 return null;
             }
         }
+        
+        public static CompareType GetCompareByString(string compareTypeString) {
+            switch (compareTypeString) {
+                case CONSTANT.EXACT_VALUE:           return CompareType.EXACT_VALUE;
+                case CONSTANT.FUZZY_VALUE:           return CompareType.FUZZY_VALUE;
+                case CONSTANT.INCREASED_VALUE:       return CompareType.INCREASED_VALUE;
+                case CONSTANT.INCREASED_VALUE_BY:    return CompareType.INCREASED_VALUE_BY;
+                case CONSTANT.DECREASED_VALUE:       return CompareType.DECREASED_VALUE;
+                case CONSTANT.DECREASED_VALUE_BY:    return CompareType.DECREASED_VALUE_BY;
+                case CONSTANT.BIGGER_THAN:           return CompareType.BIGGER_THAN_VALUE;
+                case CONSTANT.SMALLER_THAN:          return CompareType.SMALLER_THAN_VALUE;
+                case CONSTANT.CHANGED_VALUE:         return CompareType.CHANGED_VALUE;
+                case CONSTANT.UNCHANGED_VALUE:       return CompareType.UNCHANGED_VALUE;
+                case CONSTANT.BETWEEN_VALUE:         return CompareType.BETWEEN_VALUE;
+                case CONSTANT.UNKNOWN_INITIAL_VALUE: return CompareType.UNKNOWN_INITIAL_VALUE;
+                default:
+                    throw new Exception("compareType???");
+            }
+        }
 
         public static string GetStringOfValueType(ValueType valueType) {
             switch (valueType) {
-                case ValueType.ULONG_TYPE:
-                    return CONSTANT.BYTE_8_TYPE;
-
-                case ValueType.UINT_TYPE:
-                    return CONSTANT.BYTE_4_TYPE;
-
-                case ValueType.USHORT_TYPE:
-                    return CONSTANT.BYTE_2_TYPE;
-
-                case ValueType.BYTE_TYPE:
-                    return CONSTANT.BYTE_TYPE;
-
-                case ValueType.DOUBLE_TYPE:
-                    return CONSTANT.BYTE_DOUBLE_TYPE;
-
-                case ValueType.FLOAT_TYPE:
-                    return CONSTANT.BYTE_FLOAT_TYPE;
-
-                case ValueType.HEX_TYPE:
-                    return CONSTANT.BYTE_HEX_TYPE;
-
-                case ValueType.STRING_TYPE:
-                    return CONSTANT.BYTE_STRING_TYPE;
-
-                case ValueType.POINTER_TYPE:
-                    return CONSTANT.BYTE_POINTER;
-
+                case ValueType.ULONG_TYPE:   return CONSTANT.BYTE_8_TYPE;
+                case ValueType.UINT_TYPE:    return CONSTANT.BYTE_4_TYPE;
+                case ValueType.USHORT_TYPE:  return CONSTANT.BYTE_2_TYPE;
+                case ValueType.BYTE_TYPE:    return CONSTANT.BYTE_TYPE;
+                case ValueType.DOUBLE_TYPE:  return CONSTANT.BYTE_DOUBLE_TYPE;
+                case ValueType.FLOAT_TYPE:   return CONSTANT.BYTE_FLOAT_TYPE;
+                case ValueType.HEX_TYPE:     return CONSTANT.BYTE_HEX_TYPE;
+                case ValueType.STRING_TYPE:  return CONSTANT.BYTE_STRING_TYPE;
+                case ValueType.POINTER_TYPE: return CONSTANT.BYTE_POINTER;
                 default:
                     throw new Exception("GetStringOfValueType!!!");
             }
