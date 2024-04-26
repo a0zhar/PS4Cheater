@@ -156,7 +156,7 @@ namespace PS4_Cheat_Engine {
         }
 
         public string GetSectionName(int section_idx) {
-            if (section_idx < 0) return "sectioni wrong!";
+            if (section_idx < 0) return $"Section Index {i} wrong!";
 
             MappedSection sectionInfo = mapped_section_list[section_idx];
 
