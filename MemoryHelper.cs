@@ -128,42 +128,18 @@ namespace PS4_Cheat_Engine {
 
         public static CompareType GetCompareByString(string compareTypeString) {
             switch (compareTypeString) {
-                case CONSTANT.EXACT_VALUE:
-                    return CompareType.EXACT_VALUE;
-
-                case CONSTANT.FUZZY_VALUE:
-                    return CompareType.FUZZY_VALUE;
-
-                case CONSTANT.INCREASED_VALUE:
-                    return CompareType.INCREASED_VALUE;
-
-                case CONSTANT.INCREASED_VALUE_BY:
-                    return CompareType.INCREASED_VALUE_BY;
-
-                case CONSTANT.DECREASED_VALUE:
-                    return CompareType.DECREASED_VALUE;
-
-                case CONSTANT.DECREASED_VALUE_BY:
-                    return CompareType.DECREASED_VALUE_BY;
-
-                case CONSTANT.BIGGER_THAN:
-                    return CompareType.BIGGER_THAN_VALUE;
-
-                case CONSTANT.SMALLER_THAN:
-                    return CompareType.SMALLER_THAN_VALUE;
-
-                case CONSTANT.CHANGED_VALUE:
-                    return CompareType.CHANGED_VALUE;
-
-                case CONSTANT.UNCHANGED_VALUE:
-                    return CompareType.UNCHANGED_VALUE;
-
-                case CONSTANT.BETWEEN_VALUE:
-                    return CompareType.BETWEEN_VALUE;
-
-                case CONSTANT.UNKNOWN_INITIAL_VALUE:
-                    return CompareType.UNKNOWN_INITIAL_VALUE;
-
+                case CONSTANT.EXACT_VALUE:           return CompareType.EXACT_VALUE;
+                case CONSTANT.FUZZY_VALUE:           return CompareType.FUZZY_VALUE;
+                case CONSTANT.INCREASED_VALUE:       return CompareType.INCREASED_VALUE;
+                case CONSTANT.INCREASED_VALUE_BY:    return CompareType.INCREASED_VALUE_BY;
+                case CONSTANT.DECREASED_VALUE:       return CompareType.DECREASED_VALUE;
+                case CONSTANT.DECREASED_VALUE_BY:    return CompareType.DECREASED_VALUE_BY;
+                case CONSTANT.BIGGER_THAN:           return CompareType.BIGGER_THAN_VALUE;
+                case CONSTANT.SMALLER_THAN:          return CompareType.SMALLER_THAN_VALUE;
+                case CONSTANT.CHANGED_VALUE:         return CompareType.CHANGED_VALUE;
+                case CONSTANT.UNCHANGED_VALUE:       return CompareType.UNCHANGED_VALUE;
+                case CONSTANT.BETWEEN_VALUE:         return CompareType.BETWEEN_VALUE;
+                case CONSTANT.UNKNOWN_INITIAL_VALUE: return CompareType.UNKNOWN_INITIAL_VALUE;
                 default:
                     throw new Exception("compareType???");
             }
