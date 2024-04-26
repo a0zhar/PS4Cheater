@@ -41,8 +41,7 @@ namespace PS4_Cheat_Engine {
             }
         }
 
-        public void UpdateResultList(ProcessManager processManager, MemoryHelper memoryHelper,
-                    string default_value_0_str, string default_value_1_str, bool is_hex, bool newScan, int thread_id) {
+        public void UpdateResultList(ProcessManager processManager, MemoryHelper memoryHelper, string default_value_0_str, string default_value_1_str, bool is_hex, bool newScan, int thread_id) {
             if (!Check) {
                 ResultList = null;
                 return;
@@ -106,16 +105,13 @@ namespace PS4_Cheat_Engine {
     public class MappedSectionList {
         private List<MappedSection> mapped_section_list = new List<MappedSection>();
 
-        public MappedSectionList() {
-        }
+        public MappedSectionList() {}
 
         public int Count { get { return mapped_section_list.Count; } }
         public ulong TotalMemorySize { get; set; }
 
         public MappedSection this[int index] {
-            get {
-                return mapped_section_list[index];
-            }
+            get { return mapped_section_list[index]; }
         }
 
         public void ClearResultList() {
@@ -128,9 +124,7 @@ namespace PS4_Cheat_Engine {
 
         public MappedSection GetMappedSection(ulong address) {
             int sectionID = GetMappedSectionID(address);
-            if (sectionID < 0) {
-                return null;
-            }
+            if (sectionID < 0) return null;
             return mapped_section_list[sectionID];
         }
 
@@ -162,9 +156,8 @@ namespace PS4_Cheat_Engine {
         }
 
         public string GetSectionName(int section_idx) {
-            if (section_idx < 0) {
-                return "sectioni wrong!";
-            }
+            if (section_idx < 0) return "sectioni wrong!";
+
             MappedSection sectionInfo = mapped_section_list[section_idx];
 
             StringBuilder section_name = new StringBuilder();
@@ -239,17 +232,7 @@ namespace PS4_Cheat_Engine {
             }
             return totalResultCount;
         }
-        /*
-        public ulong TotalResultCount() {
-            ulong total_result_count = 0;
-            for (int idx = 0; idx < mapped_section_list.Count; ++idx) {
-                if (mapped_section_list[idx].Check && mapped_section_list[idx].ResultList != null) {
-                    total_result_count += (ulong)mapped_section_list[idx].ResultList.Count;
-                }
-            }
-            return total_result_count;
-        }
-        */
+        
         private int FindSectionID(ulong address) {
             int low = 0;
             int high = mapped_section_list.Count - 1;
@@ -257,10 +240,12 @@ namespace PS4_Cheat_Engine {
 
             while (low <= high) {
                 middle = (low + high) / 2;
-                if (address >= mapped_section_list[middle].Start + (ulong)(mapped_section_list[middle].Length)) {
+                var m_section = mapped_section_list[middle];
+                
+                if (address >= m_section.Start + (ulong)(m_section.Length)) {
                     low = middle + 1;   // Search last half of the array
                 }
-                else if (address < mapped_section_list[middle].Start) {
+                else if (address < m_section.Start) {
                     high = middle - 1;  // Search first half of the array
                 }
                 else {
@@ -317,21 +302,21 @@ namespace PS4_Cheat_Engine {
             this.element_alignment = element_alignment;
         }
 
-        public int Count { get { return count; } }
+        public int Count { 
+            get { return count; } 
+        }
 
         public void Add(uint memoryAddressOffset, byte[] memoryValue) {
-            if (memoryValue.Length != element_size) {
+            if (memoryValue.Length != element_size) 
                 throw new Exception("Invalid address!");
-            }
 
             byte[] dense_buffer = buffer_list[buffer_id];
 
             uint tag_address_offset_base = BitConverter.ToUInt32(dense_buffer, buffer_tag_offset);
             ulong bit_map = BitConverter.ToUInt64(dense_buffer, buffer_tag_offset + OFFSET_SIZE);
 
-            if (tag_address_offset_base > memoryAddressOffset) {
+            if (tag_address_offset_base > memoryAddressOffset)
                 throw new Exception("Invalid address!");
-            }
 
             if (bit_map == 0) {
                 tag_address_offset_base = memoryAddressOffset;
@@ -415,7 +400,13 @@ namespace PS4_Cheat_Engine {
 
         public void Set(byte[] memoryValue) {
             byte[] dense_buffer = buffer_list[buffer_id];
-            Buffer.BlockCopy(memoryValue, 0, dense_buffer, buffer_tag_offset + OFFSET_SIZE + BIT_MAP_SIZE + element_size * buffer_tag_elem_count, element_size);
+            Buffer.BlockCopy(
+                memoryValue,
+                0, 
+                dense_buffer, 
+                buffer_tag_offset + OFFSET_SIZE + BIT_MAP_SIZE + element_size * buffer_tag_elem_count,
+                element_size
+            );
         }
 
         private int bit_count(ulong data, int end) {
