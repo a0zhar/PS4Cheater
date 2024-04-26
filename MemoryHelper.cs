@@ -368,90 +368,40 @@ namespace PS4_Cheat_Engine {
             switch (compareType) {
                 case CompareType.UNKNOWN_INITIAL_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_any_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_any_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_any_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_any_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_any_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_any_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_any_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_any_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_any_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_any_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_any_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_any_uint8;  break;
+                        default: break;
+                    };
+                    
                     ParseFirstValue = false;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.FUZZY_VALUE:
-                    switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_fuzzy_equal_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_fuzzy_equal_float;
-                            break;
-
-                        default:
-                            break;
-                    }
+                    if (valueType == ValueType.DOUBLE_TYPE)
+                        Comparer = scan_type_fuzzy_equal_double;
+                    else if (valueType == ValueType.FLOAT_TYPE)
+                        Comparer = scan_type_fuzzy_equal_float;
+                    
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.EXACT_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_equal_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_equal_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_equal_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_equal_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_equal_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_equal_uint8;
-                            break;
-
-                        case ValueType.HEX_TYPE:
-                            Comparer = scan_type_equal_hex;
-                            break;
-
-                        case ValueType.STRING_TYPE:
-                            Comparer = scan_type_equal_string;
-                            break;
-
-                        default:
-                            break;
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_equal_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_equal_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_equal_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_equal_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_equal_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_equal_uint8;  break;
+                        case ValueType.HEX_TYPE:    Comparer = scan_type_equal_hex;    break;
+                        case ValueType.STRING_TYPE: Comparer = scan_type_equal_string; break;
+                        default: break;
                     }
                     ParseFirstValue = true;
                     ParseSecondValue = false;
@@ -459,297 +409,128 @@ namespace PS4_Cheat_Engine {
 
                 case CompareType.CHANGED_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_changed_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_changed_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_changed_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_changed_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_changed_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_changed_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_changed_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_changed_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_changed_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_changed_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_changed_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_changed_uint8;  break;
+                        default:break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.UNCHANGED_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_unchanged_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_unchanged_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_unchanged_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_unchanged_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_unchanged_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_unchanged_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_unchanged_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_unchanged_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_unchanged_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_unchanged_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_unchanged_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_unchanged_uint8;  break;
+                        default: break;
+                    };
+                    
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.INCREASED_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_increased_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_increased_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_increased_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_increased_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_increased_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_increased_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_increased_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_increased_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_increased_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_increased_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_increased_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_increased_uint8;  break;
+                        default: break;
+                    };
+                    
                     ParseFirstValue = false;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.INCREASED_VALUE_BY:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_increased_by_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_increased_by_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_increased_by_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_increased_by_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_increased_by_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_increased_by_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_increased_by_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_increased_by_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_increased_by_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_increased_by_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_increased_by_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_increased_by_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.DECREASED_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_decreased_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_decreased_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_decreased_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_decreased_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_decreased_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_decreased_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_decreased_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_decreased_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_decreased_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_decreased_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_decreased_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_decreased_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = false;
                     ParseSecondValue = false;
                     break;
 
-                case CompareType.DECREASED_VALUE_BY:
+                case CompareType.DECREASED_VALUE_BY: 
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_decreased_by_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_decreased_by_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_decreased_by_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_decreased_by_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_decreased_by_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_decreased_by_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_decreased_by_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_decreased_by_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_decreased_by_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_decreased_by_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_decreased_by_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_decreased_by_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.BIGGER_THAN_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_bigger_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_bigger_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_bigger_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_bigger_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_bigger_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_bigger_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_bigger_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_bigger_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_bigger_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_bigger_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_bigger_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_bigger_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
                 case CompareType.SMALLER_THAN_VALUE:
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_less_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_less_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_less_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_less_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_less_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_less_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_less_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_less_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_less_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_less_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_less_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_less_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = false;
                     break;
 
-                case CompareType.BETWEEN_VALUE:
+                case CompareType.BETWEEN_VALUE:       
                     switch (valueType) {
-                        case ValueType.DOUBLE_TYPE:
-                            Comparer = scan_type_between_double;
-                            break;
-
-                        case ValueType.FLOAT_TYPE:
-                            Comparer = scan_type_between_float;
-                            break;
-
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_between_ulong;
-                            break;
-
-                        case ValueType.UINT_TYPE:
-                            Comparer = scan_type_between_uint;
-                            break;
-
-                        case ValueType.USHORT_TYPE:
-                            Comparer = scan_type_between_uint16;
-                            break;
-
-                        case ValueType.BYTE_TYPE:
-                            Comparer = scan_type_between_uint8;
-                            break;
-
-                        default:
-                            break;
-                    }
+                        case ValueType.DOUBLE_TYPE: Comparer = scan_type_between_double; break;
+                        case ValueType.FLOAT_TYPE:  Comparer = scan_type_between_float;  break;
+                        case ValueType.ULONG_TYPE:  Comparer = scan_type_between_ulong;  break;
+                        case ValueType.UINT_TYPE:   Comparer = scan_type_between_uint;   break;
+                        case ValueType.USHORT_TYPE: Comparer = scan_type_between_uint16; break;
+                        case ValueType.BYTE_TYPE:   Comparer = scan_type_between_uint8;  break;
+                        default: break;
+                    };
                     ParseFirstValue = true;
                     ParseSecondValue = true;
                     break;
