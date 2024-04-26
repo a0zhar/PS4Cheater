@@ -536,22 +536,19 @@ namespace PS4_Cheat_Engine {
                     break;
 
                 case CompareType.POINTER_VALUE:
-                    switch (valueType) {
-                        case ValueType.ULONG_TYPE:
-                            Comparer = scan_type_between_ulong;
-                            break;
+                    if (valueType == ValueType.ULONG_TYPE)
+                        Comparer = scan_type_between_ulong;
+                    else
+                        throw new Exception("Pointer Type!!!");
 
-                        default:
-                            throw new Exception("Pointer Type!!!");
-                    }
                     ParseFirstValue = false;
                     ParseSecondValue = false;
                     break;
 
-                default:
+                default: 
+                    // throw new Exception("Unknown compare type.");
                     break;
-                    //throw new Exception("Unknown compare type.");
-            }
+            };
         }
 
         public void InitNextScanMemoryHandler(string compareType) {
