@@ -6,6 +6,9 @@ using PS4_Cheat_Engine.Forms;
 namespace PS4_Cheat_Engine {
 
     internal class GameInfo {
+        // TODO:
+        // The 7.02, 6.72, and 5.05 are all the same, use 1 version of the variables for all three
+        // rather than have 3 versions of these 5 variables
         private const string GAME_INFO_7_02_PROCESS_NAME = "SceCdlgApp";
         private const string GAME_INFO_7_02_SECTION_NAME = "libSceCdlgUtilServer.sprx";
         private const int GAME_INFO_7_02_SECTION_PROT = 3;
@@ -59,8 +62,7 @@ namespace PS4_Cheat_Engine {
                     section_prot = GAME_INFO_5_05_SECTION_PROT;
                     break;
 
-                default:
-                    break;
+                default: break;
             }
 
             try {
@@ -133,8 +135,7 @@ namespace PS4_Cheat_Engine {
         public const string NEXT_SCAN = "Next Scan";
         public const string REFRESH = "Refresh";
 
-        public static string[] SEARCH_VALUE_TYPE = new string[]
-        {
+        public static string[] SEARCH_VALUE_TYPE = new string[] {
              CONSTANT.BYTE_TYPE,
              CONSTANT.BYTE_2_TYPE,
              CONSTANT.BYTE_4_TYPE,
@@ -160,9 +161,9 @@ namespace PS4_Cheat_Engine {
 
         public static bool addSetting(string key, string value) {
             try {
-                //Configuration config = ConfigurationManager.OpenExeConfiguration(fileName);
-                //config.AppSettings.Settings.Add(key, value);
-                //config.Save();
+                Configuration config = ConfigurationManager.OpenExeConfiguration(fileName);
+                config.AppSettings.Settings.Add(key, value);
+                config.Save();
                 return true;
             }
             catch {
@@ -172,9 +173,9 @@ namespace PS4_Cheat_Engine {
 
         public static string getSetting(string key) {
             try {
-                //Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
-                //string value = config.AppSettings.Settings[key].Value;
-                // return value;
+                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
+                string value = config.AppSettings.Settings[key].Value;
+                return value;
             }
             catch {
             }
@@ -183,9 +184,9 @@ namespace PS4_Cheat_Engine {
 
         public static bool updateSetting(string key, string newValue) {
             try {
-                // Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
-                // string value = config.AppSettings.Settings[key].Value = newValue;
-                // config.Save();
+                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(fileName);
+                string value = config.AppSettings.Settings[key].Value = newValue;
+                config.Save();
                 return true;
             }
             catch {
