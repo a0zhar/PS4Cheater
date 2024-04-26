@@ -201,49 +201,24 @@ namespace PS4_Cheat_Engine {
         }
 
         public static ValueType GetValueTypeByString(string valueType) {
-            ValueType _valueType = ValueType.NONE_TYPE;
             switch (valueType) {
-                case CONSTANT.BYTE_8_TYPE:
-                    _valueType = ValueType.ULONG_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_4_TYPE:
-                    _valueType = ValueType.UINT_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_2_TYPE:
-                    _valueType = ValueType.USHORT_TYPE;
-                    break;
-
+                case CONSTANT.BYTE_8_TYPE:      return ValueType.ULONG_TYPE;
+                case CONSTANT.BYTE_4_TYPE:      return ValueType.UINT_TYPE;
+                case CONSTANT.BYTE_2_TYPE:      return ValueType.USHORT_TYPE;
+                case CONSTANT.BYTE_DOUBLE_TYPE: return ValueType.DOUBLE_TYPE;
+                case CONSTANT.BYTE_FLOAT_TYPE:  return ValueType.FLOAT_TYPE;
+                case CONSTANT.BYTE_HEX_TYPE:    return ValueType.HEX_TYPE;
+                case CONSTANT.BYTE_STRING_TYPE: return ValueType.STRING_TYPE;
+                case CONSTANT.BYTE_POINTER:     return ValueType.POINTER_TYPE;
                 case CONSTANT.BYTE_TYPE:
                 case CONSTANT.BYTE_1_TYPE:
-                    _valueType = ValueType.BYTE_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_DOUBLE_TYPE:
-                    _valueType = ValueType.DOUBLE_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_FLOAT_TYPE:
-                    _valueType = ValueType.FLOAT_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_HEX_TYPE:
-                    _valueType = ValueType.HEX_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_STRING_TYPE:
-                    _valueType = ValueType.STRING_TYPE;
-                    break;
-
-                case CONSTANT.BYTE_POINTER:
-                    _valueType = ValueType.POINTER_TYPE;
-                    break;
-
+                    return ValueType.BYTE_TYPE;
+                
                 default:
                     throw new Exception("GetValueTypeByString!!!");
             }
-            return _valueType;
+            
+            return ValueType.NONE_TYPE;
         }
 
         public static byte[] string_to_hex_bytes(string hexString) {
