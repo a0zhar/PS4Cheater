@@ -17,8 +17,7 @@ namespace PS4_Cheat_Engine {
         private BackgroundWorker worker;
         private Mutex worker_mutex;
 
-        public ComparerThread(ProcessManager processManager, MemoryHelper memoryHelper, List<byte[]> bufferQueue,
-            string value_0, string value_1, BackgroundWorker worker, Semaphore consumerMutex, Semaphore producerMutex, Mutex workerMutex) {
+        public ComparerThread(ProcessManager processManager, MemoryHelper memoryHelper, List<byte[]> bufferQueue, string value_0, string value_1, BackgroundWorker worker, Semaphore consumerMutex, Semaphore producerMutex, Mutex workerMutex) {
             this.processManager = processManager;
             this.memoryHelper = memoryHelper;
             this.buffer_queue = bufferQueue;
@@ -176,7 +175,7 @@ namespace PS4_Cheat_Engine {
 
     internal class PeekThread {
 
-        //private BackgroundWorker worker;
+        // private BackgroundWorker worker;
         private List<byte[]> buffer_queue;
 
         private Semaphore consumer_mutex;
@@ -217,10 +216,10 @@ namespace PS4_Cheat_Engine {
                         length -= cur_length;
                     }
 
-                    //if (worker.CancellationPending) break;
+                    // if (worker.CancellationPending) break;
 
                     producer_mutex.WaitOne();
-                    //buffer_queue[productor_idx] = memoryHelper.ReadMemory(address, (int)cur_length);
+                    // buffer_queue[productor_idx] = memoryHelper.ReadMemory(address, (int)cur_length);
                     productor_idx = (productor_idx + 1) % CONSTANT.MAX_PEEK_QUEUE;
                     consumer_mutex.Release();
 
