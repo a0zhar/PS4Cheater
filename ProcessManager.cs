@@ -230,7 +230,16 @@ namespace PS4_Cheat_Engine {
                 TotalMemorySize -= (ulong)mapped_section_list[idx].Length;
             }
         }
-
+        
+        public ulong TotalResultCount() {
+            ulong totalResultCount = 0;
+            foreach (var section in mapped_section_list) {
+                if (section.Check && section.ResultList != null)
+                    totalResultCount += (ulong)section.ResultList.Count;
+            }
+            return totalResultCount;
+        }
+        /*
         public ulong TotalResultCount() {
             ulong total_result_count = 0;
             for (int idx = 0; idx < mapped_section_list.Count; ++idx) {
@@ -240,7 +249,7 @@ namespace PS4_Cheat_Engine {
             }
             return total_result_count;
         }
-
+        */
         private int FindSectionID(ulong address) {
             int low = 0;
             int high = mapped_section_list.Count - 1;
